@@ -14,7 +14,7 @@ INSERT INTO users (username) VALUES ('Anton'), ('Oleg'), ('Kaban');
 CREATE TABLE IF NOT EXISTS urls (
     url_id SERIAL,
     original_url TEXT NOT NULL,
-    token VARCHAR(20),
+    token VARCHAR(36),
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
