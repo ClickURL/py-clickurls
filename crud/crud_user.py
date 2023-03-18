@@ -1,0 +1,45 @@
+from db.database import Database
+from models.model_user import User
+
+class UserCrud:
+    
+    def __init__(self):
+        self.db  = Database()
+    
+    def get_user(self, user_id: int):
+        result = self.db.get_user(user_id)
+        if not result:
+            return "User not exist in database"
+        user_return = User(result[1], result[0], result[2], result[3], result[4])
+        if user_return.user_is_deleted():
+            return "User already deleted"
+        return user_return
+    
+    def get_users(self):
+        result = self.db.get_users()
+        users_return = []
+        for value in result:
+            user = User(value[1], value[0], value[2], value[3], value[4])
+            users_return.append(user)
+        return users_return
+    
+    def create_user(self, user_name: str):
+        result = self.db.create_user(user_name)
+        user_return = User(result[1], result[0], result[2], result[3], result[4])
+        return user_return
+    
+    def update_user(self, user_id: int, user_name: str | None = None):
+        user_to_update = self.get_user(user_id)
+        user_to_update.update_user(user_name)
+        result = self.db.update_user(user_to_update.name, user_to_update.updated_at, user_to_update.id)
+        user_return = User(result[1], result[0], result[2], result[3], result[4])
+        return user_return
+    
+    def delete_user(self, user_id: int):
+        user_to_delete = self.get_user(user_id)
+        if type(user_to_delete) is str:
+            return user_to_delete
+        user_to_delete.delete_user()
+        result = self.db.delete_user(user_to_delete.id, user_to_delete.deleted_at)
+        user_return = User(result[1], result[0], result[2], result[3], result[4])
+        return user_return
