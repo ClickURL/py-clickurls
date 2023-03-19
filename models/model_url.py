@@ -1,11 +1,10 @@
 from datetime import datetime
-from model_access_token import generate_access_token
 
 class Url:
-    def __init__(self, original_url, creator_id, url_id = None, created_at = None, updated_at = None, deleted_at = None):
+    def __init__(self, original_url, creator_id, url_id = None, token = None, created_at = None, updated_at = None, deleted_at = None):
         self.url_id = url_id
         self.original_url = original_url
-        self.token = generate_access_token()
+        self.token = token
         self.created_at = created_at
         self.updated_at = updated_at
         self.deleted_at = deleted_at

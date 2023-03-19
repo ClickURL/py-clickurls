@@ -14,7 +14,8 @@ INSERT INTO users (username) VALUES ('Anton'), ('Oleg'), ('Kaban');
 CREATE TABLE IF NOT EXISTS urls (
     url_id SERIAL,
     original_url TEXT NOT NULL,
-    token VARCHAR(36),
+    -- token VARCHAR(40),
+    token uuid,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
@@ -23,6 +24,6 @@ CREATE TABLE IF NOT EXISTS urls (
     FOREIGN KEY (creator_id) REFERENCES users(user_id) ON DELETE RESTRICT
 );
 INSERT INTO urls (original_url, token, creator_id) VALUES 
-('first url', 'test-token-1', 1),
-('second url', 'test-token-2', 2),
-('fourth url', 'test-token-3', 3);
+('first url', 'a8098c1a-f86e-11da-bd1a-00112444be1e', 1),
+('second url', 'a8098c1a-f86e-11da-bd1a-00112444be2e', 2),
+('fourth url', 'a8098c1a-f86e-11da-bd1a-00112444be3e', 3);
