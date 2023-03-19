@@ -1,15 +1,15 @@
 import uvicorn
 from fastapi import FastAPI
-from models.model_user import User
-from db.database import Database
 from crud.crud_user import UserCrud
+from db.database import Database
+from datetime import datetime
 
 app = FastAPI()
 
 @app.get("/")
 async def root():
     
-    result = UserCrud().delete_user(7)
+    result = Database().create_user("Borus")
     
     return result
     

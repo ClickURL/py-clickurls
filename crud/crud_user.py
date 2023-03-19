@@ -10,7 +10,7 @@ class UserCrud:
         result = self.db.get_user(user_id)
         if not result:
             return "User not exist in database"
-        user_return = User(result[1], result[0], result[2], result[3], result[4])
+        user_return = User(result[0], result[1], result[2], result[3], result[4])
         if user_return.user_is_deleted():
             return "User already deleted"
         return user_return
@@ -19,7 +19,7 @@ class UserCrud:
         result = self.db.get_users()
         users_return = []
         for value in result:
-            user = User(value[1], value[0], value[2], value[3], value[4])
+            user = User(value[0], value[1], value[2], value[3], value[4])
             users_return.append(user)
         return users_return
     
@@ -32,7 +32,7 @@ class UserCrud:
         user_to_update = self.get_user(user_id)
         user_to_update.update_user(user_name)
         result = self.db.update_user(user_to_update.name, user_to_update.updated_at, user_to_update.id)
-        user_return = User(result[1], result[0], result[2], result[3], result[4])
+        user_return = User(result[0], result[1], result[2], result[3], result[4])
         return user_return
     
     def delete_user(self, user_id: int):
@@ -41,5 +41,5 @@ class UserCrud:
             return user_to_delete
         user_to_delete.delete_user()
         result = self.db.delete_user(user_to_delete.id, user_to_delete.deleted_at)
-        user_return = User(result[1], result[0], result[2], result[3], result[4])
+        user_return = User(result[0], result[1], result[2], result[3], result[4])
         return user_return

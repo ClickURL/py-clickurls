@@ -1,6 +1,5 @@
 import psycopg2 as db
 from config import settings
-from models.model_user import User
 
 class Database:
     
@@ -70,3 +69,65 @@ class Database:
                 return result
         except Exception as err:
             print("Delete User Error: ", err)
+    
+    def get_url(self, url_id):
+        try:
+            with db.connect(self.url) as conection:
+                cursor = conection.cursor()
+                sql_statements = "SELECT * FROM urls WHERE url_id = %s"
+                data = [url_id]
+                cursor.execute(sql_statements, data)
+                result = cursor.fetchone()
+                cursor.close()
+                return result
+        except Exception as err:
+            print("Get URL DB Error: ", err)
+            
+    def get_urls(self):
+        try:
+            with db.connect(self.url) as conection:
+                cursor = conection.cursor()
+                sql_statements = "SELECT * FROM urls WHERE deleted_at IS NULL"
+                cursor.execute(sql_statements)
+                result = cursor.fetchall()
+                cursor.close()
+                return result
+        except Exception as err:
+            print("Get URLs DB Error: ", err)
+    
+    def create_url(self, original_url, token_url, creator_id):
+        try:
+            with db.connect(self.url) as conection:
+                cursor = conection.cursor()
+                sql_statements = "INSERT INTO urls (original_url, token, creator_id) VALUES (%s, %s, %s) RETURNING *"
+                data = [original_url, token_url, creator_id]
+                cursor.execute(sql_statements, data)
+                result = cursor.fetchone()
+                return result
+        except Exception as err:
+            print("Create URL DB Error: ", err)
+            
+    def update_url(self, url_id, original_url, updated_at):
+        try:
+            with db.connect(self.url) as conection:
+                cursor = conection.cursor()
+                sql_statements = "UPDATE urls SET original_url = %s, updated_at = %s WHERE url_id = %s RETURNING *"
+                data = [original_url, updated_at, url_id]
+                cursor.execute(sql_statements, data)
+                result = cursor.fetchone()
+                return result
+        except Exception as err:
+            print("Update URL DB Error: ", err)
+    
+    def delete_url(self, url_id, deleted_at):
+        try:
+            with db.connect(self.url) as conection:
+                cursor = conection.cursor()
+                sql_statements = "UPDATE urls SET deleted_at = %s WHERE url_id = %s RETURNING *"
+                data = [deleted_at, url_id]
+                cursor.execute(sql_statements, data)
+                result = cursor.fetchone()
+                return result
+        except Exception as err:
+            print("Delete URL DB Error: ", err)
+    
