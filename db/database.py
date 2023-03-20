@@ -1,15 +1,15 @@
 import psycopg2 as db
-import psycopg2.extras
+from psycopg2 import extras
 from config import settings
 
-psycopg2.extras.register_uuid()
+extras.register_uuid()
 
 class Database:
     
     def __init__(self):
         self.url = settings.database_url
     
-    def get_user(self, user_id):
+    def get_user(self, user_id: int):
         try:
             with db.connect(self.url) as conection:
                 cursor = conection.cursor()
@@ -104,7 +104,25 @@ class Database:
         except Exception as err:
             print("Get URLs DB Error: ", err)
             raise err
-    
+        
+    def get_urls_by_user(self, user_id):
+        try:
+            with db.connect(self.url) as conection:
+                cursor = conection.cursor(cursor_factory=extras.RealDictCursor)
+                sql_statements = """
+                SELECT urls.* FROM urls 
+                JOIN users ON (users.user_id = urls.creator_id)
+                WHERE user_id = %s
+                """
+                data = [user_id]
+                cursor.execute(sql_statements, data)
+                result = cursor.fetchall()
+                cursor.close()
+                return result
+        except Exception as err:
+            print("Get User with URL DB Error: ", err)
+            raise err
+        
     def create_url(self, original_url, token_url, creator_id):
         try:
             with db.connect(self.url) as conection:
