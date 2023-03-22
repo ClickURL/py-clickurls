@@ -1,14 +1,15 @@
 from datetime import datetime
 
 class Url:
-    def __init__(self, original_url, creator_id, url_id = None, token = None, created_at = None, updated_at = None, deleted_at = None):
-        self.url_id = url_id
-        self.original_url = original_url
-        self.token = token
-        self.created_at = created_at
-        self.updated_at = updated_at
-        self.deleted_at = deleted_at
-        self.creator_id = creator_id
+    def __init__(self, **kwargs):
+        self.id = kwargs["url_id"] if kwargs.get("url_id") else None
+        self.original_url = kwargs["original_url"] if kwargs.get("original_url") else None
+        self.short_url = kwargs["short_url"] if kwargs.get("short_url") else None
+        self.token = kwargs["token"] if kwargs.get("token") else None
+        self.created_at = kwargs["created_at"] if kwargs.get("created_at") else None
+        self.updated_at = kwargs["updated_at"] if kwargs.get("updated_at") else None
+        self.deleted_at = kwargs["deleted_at"] if kwargs.get("deleted_at") else None
+        self.creator_id = kwargs["creator_id"] if kwargs.get("creator_id") else None
         
     def update_url(self, new_original_url = None):
         if new_original_url:

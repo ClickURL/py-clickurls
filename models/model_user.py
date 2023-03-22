@@ -1,12 +1,12 @@
 from datetime import datetime
 
 class User:
-    def __init__(self, name: str, id: int | None = None, created_at: datetime | None = None, updated_at: datetime | None = None, deleted_at: datetime | None = None):
-        self.id = id
-        self.name = name
-        self.created_at = created_at
-        self.updated_at = updated_at
-        self.deleted_at = deleted_at
+    def __init__(self, **kwargs):
+        self.id = kwargs["user_id"] if kwargs.get("user_id") else None
+        self.name = kwargs["user_name"] if kwargs.get("user_name") else None
+        self.created_at = kwargs["created_at"] if kwargs.get("created_at") else None
+        self.updated_at = kwargs["updated_at"] if kwargs.get("updated_at") else None
+        self.deleted_at = kwargs["deleted_at"] if kwargs.get("deleted_at") else None
         self.urls = []
         
     def update_user(self, new_name = None):

@@ -5,7 +5,7 @@ from crud.crud_user import UserCrud
 from crud.crud_url import UrlCrud
 from db.database import Database
 
-from schemas import schemas_user, schemas_url, schemas_user_url
+from schemas import schemas_user, schemas_url
 
 from models.model_user import User
 from models.model_url import Url
@@ -15,20 +15,14 @@ app = FastAPI()
 @app.get("/")
 def test():
     try:
-        result = Database().get_urls_by_user(3)
+        result = UrlCrud().get_url_by_column("short_url", "second_shrt_code")
         return result
     except Exception as e:
         raise e.detail("Get User with URLs ERROR")
 
-@app.get("/ted", response_model=schemas_user_url.UserUrlBase)
-def root():
-    try:
-    
-        result = Database().get_urls_by_user(1)
-        user_return = {"name": result[1], "id": result[0], "created_at": result[2], "original_url": result[6]}
-        return user_return
-    except Exception as e:
-        raise e.detail("Get User with URLs ERROR")
+
+# User side router
+# ________________________________________________________________
 
 @app.get("/users", response_model=list[schemas_user.UserGet])
 def get_all_users():
@@ -69,6 +63,58 @@ def delete_user_by_id(id: int):
         return result
     except HTTPException as e:
         raise e.detail("Delete User ERROR")
+
+
+# URL side router
+# ________________________________________________________________
+
+@app.get("/urls", response_model=list[schemas_url.UrlGet])
+def get_all_urls():
+    try:
+        result = UrlCrud().get_all_urls()
+        return result
+    except HTTPException as e:
+        raise e.detail("Get All URLs ERROR")
     
+@app.get("/urls/url_id{id}", response_model=schemas_url.UrlGet)
+def get_url_by_id(id: int):
+    try:
+        result = UrlCrud().get_url_by_id(id)
+        return result
+    except HTTPException as e:
+        raise e.detail("Get URL ERROR")
+    
+@app.get("/urls/creator{creator_id}", response_model=list[schemas_url.UrlGet])
+def get_url_by_creator(creator_id: int):
+    try:
+        result = UrlCrud().get_url_by_creator(creator_id)
+        return result
+    except HTTPException as e:
+        raise e.detail("Get URL ERROR")
+    
+@app.post("/urls", response_model=schemas_url.UrlPost)
+def create_url(original_url: str, creator_id: int):
+    try:
+        result = UrlCrud().create_url(original_url, creator_id)
+        return result
+    except HTTPException as e:
+        raise e.detail("POST URL ERROR")
+    
+@app.put("/urls/{id}", response_model=schemas_url.UrlUpdate)
+def update_url_by_id(id: int, new_url: str):
+    try:
+        result = UrlCrud().update_url(id, new_url)
+        return result
+    except HTTPException as e:
+        raise e.detail("PUT URL ERROR")
+    
+@app.delete("/urls/{id}", response_model=schemas_url.UrlDelete)
+def delete_url_by_id(id: int):
+    try:
+        result = UrlCrud().delete_url(id)
+        return result
+    except HTTPException as e:
+        raise e.detail("Delete URL ERROR")
+
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)

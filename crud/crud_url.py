@@ -1,43 +1,64 @@
 from db.database import Database
 from models.model_url import Url
 from models.model_access_token import generate_access_token
+from models.model_gen_short import generate_short_url
 
 class UrlCrud:
     
     def __init__(self):
         self.db = Database()
         
-    def get_url(self, url_id):
-        result = self.db.get_url(url_id)
+    def get_url_by_id(self, url_id):
+        result = self.db.get_url("url_id", url_id)
         if not result:
             return "URL not exist in database"
-        url_return = Url(result[1], result[6], result[0], result[2], result[3], result[4], result[5])
+        url_return = Url(**result)
+        if url_return.url_is_deleted():
+            return "URL already deleted"
+        return url_return
+    
+    # get from DB url by any column from database
+    def get_url_by_column(self, column: str, value):
+        result = self.db.get_url(column, value)
+        if not result:
+            return "URL not exist in database"
+        url_return = Url(**result)
         if url_return.url_is_deleted():
             return "URL already deleted"
         return url_return
     
     def get_all_urls(self):
         result = self.db.get_urls()
-        url_return = [Url(value[1], value[6], value[0], value[2], value[3], value[4], value[5]) for value in result]
-        return url_return
+        urls_return = [Url(**value) for value in result]
+        return urls_return
+    
+    def get_url_by_creator(self, creator_id):
+        result = self.db.get_urls_by_user(creator_id)
+        urls_return = [Url(**value) for value in result]
+        return urls_return
         
     def create_url(self, orignal_url, creator_id):
-        result = self.db.create_url(original_url=orignal_url, token_url=generate_access_token(), creator_id=creator_id)
-        url_return = Url(result[1], result[6], result[0], result[2], result[3], result[4], result[5])
+        condition = True
+        while condition:
+            short_code = generate_short_url()
+            if type(self.get_url_by_column("short_url", short_code)) is str:
+                condition = False
+        result = self.db.create_url(original_url=orignal_url, short_url=short_code, token_url=generate_access_token(), creator_id=creator_id)
+        url_return = Url(**result)
         return url_return
         
     def update_url(self, url_id, new_original_url = None):
-        url_to_update = self.get_url(url_id)
+        url_to_update = self.get_url_by_id(url_id)
         url_to_update.update_url(new_original_url)
-        result = self.db.update_url(url_to_update.url_id, url_to_update.original_url, url_to_update.updated_at)
-        url_return = Url(result[1], result[6], result[0], result[2], result[3], result[4], result[5])
+        result = self.db.update_url(url_to_update.id, url_to_update.original_url, url_to_update.updated_at)
+        url_return = Url(**result)
         return url_return
     
     def delete_url(self, url_id):
-        url_to_delete = self.get_url(url_id)
+        url_to_delete = self.get_url_by_id(url_id)
         if type(url_to_delete) is str:
             return url_to_delete
         url_to_delete.delete_url()
-        result = self.db.delete_url(url_to_delete.url_id, url_to_delete.deleted_at)
-        url_return = Url(result[1], result[6], result[0], result[2], result[3], result[4], result[5])
+        result = self.db.delete_url(url_to_delete.id, url_to_delete.deleted_at)
+        url_return = Url(**result)
         return url_return
