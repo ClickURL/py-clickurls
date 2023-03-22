@@ -1,3 +1,4 @@
+from uuid import UUID
 from datetime import datetime
 from pydantic import BaseModel
 
@@ -19,3 +20,10 @@ class UrlUpdate(UrlGet):
 
 class UrlDelete(UrlUpdate):
     deleted_at: datetime
+    
+class UrlEditPage(BaseModel):
+    short_url_full: str
+    secret_access_token_full: str
+
+    class Config:
+        orm_mode = True

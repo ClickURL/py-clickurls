@@ -7,7 +7,7 @@ class UrlCrud:
     
     def __init__(self):
         self.db = Database()
-        
+    
     def get_url_by_id(self, url_id):
         result = self.db.get_url("url_id", url_id)
         if not result:
@@ -17,7 +17,7 @@ class UrlCrud:
             return "URL already deleted"
         return url_return
     
-    # get from DB url by any column from database
+    # get from DB one url by any column from database
     def get_url_by_column(self, column: str, value):
         result = self.db.get_url(column, value)
         if not result:
@@ -43,7 +43,7 @@ class UrlCrud:
             short_code = generate_short_url()
             if type(self.get_url_by_column("short_url", short_code)) is str:
                 condition = False
-        result = self.db.create_url(original_url=orignal_url, short_url=short_code, token_url=generate_access_token(), creator_id=creator_id)
+        result = self.db.create_url(original_url=orignal_url, short_url=short_code, secret_access_token=generate_access_token(), creator_id=creator_id)
         url_return = Url(**result)
         return url_return
         

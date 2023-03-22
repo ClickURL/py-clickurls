@@ -1,27 +1,29 @@
 import uvicorn
 from fastapi import FastAPI, HTTPException
-from typing import Union
+from fastapi.responses import RedirectResponse
+
+from config import settings
+from models.model_user import User
+from models.model_url import Url
+from schemas import schemas_user, schemas_url
 from crud.crud_user import UserCrud
 from crud.crud_url import UrlCrud
 from db.database import Database
 
-from schemas import schemas_user, schemas_url
-
-from models.model_user import User
-from models.model_url import Url
+hostname = settings.localhost
+port = settings.port
 
 app = FastAPI()
 
-@app.get("/")
+
+
+@app.get("/test")
 def test():
-    try:
-        result = UrlCrud().get_url_by_column("short_url", "second_shrt_code")
-        return result
-    except Exception as e:
-        raise e.detail("Get User with URLs ERROR")
+    hostname = "Hello World"
+    return hostname
 
 
-# User side router
+# User side router, to interact with the entity User (for testing)
 # ________________________________________________________________
 
 @app.get("/users", response_model=list[schemas_user.UserGet])
@@ -65,7 +67,7 @@ def delete_user_by_id(id: int):
         raise e.detail("Delete User ERROR")
 
 
-# URL side router
+# URL side router, to interact with the entity URL (for testing)
 # ________________________________________________________________
 
 @app.get("/urls", response_model=list[schemas_url.UrlGet])
@@ -116,5 +118,27 @@ def delete_url_by_id(id: int):
     except HTTPException as e:
         raise e.detail("Delete URL ERROR")
 
+
+# URL redirect side router
+# ________________________________________________________________
+
+@app.get("/{short_url}")
+def redirect_to_long_url(short_url: str):
+    try:
+        result = UrlCrud().get_url_by_column("short_url", short_url)
+        original_url = result.original_url
+        return RedirectResponse(original_url)
+    except HTTPException as e:
+        raise e.detail("Redirect to original URL ERROR")
+
+@app.get("/edit/{secret_access_token}", response_model=schemas_url.UrlEditPage)
+def edit_url(secret_access_token: str):
+    try:
+        result = UrlCrud().get_url_by_column("secret_access_token", secret_access_token)
+        return result
+    except HTTPException as e:
+        raise e.detail("EDIT URL ERROR")
+
+
 if __name__ == "__main__":
-    uvicorn.run("main:app", reload=True)
+    uvicorn.run("main:app", host=hostname, port=port, reload=True)

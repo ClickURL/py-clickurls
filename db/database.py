@@ -119,12 +119,12 @@ class Database:
             print("Get User with URL DB Error: ", err)
             raise err
         
-    def create_url(self, original_url, short_url, token_url, creator_id):
+    def create_url(self, original_url, short_url, secret_access_token, creator_id):
         try:
             with db.connect(self.url) as conection:
                 cursor = conection.cursor(cursor_factory=extras.RealDictCursor)
-                sql_statements = "INSERT INTO urls (original_url, short_url, token, creator_id) VALUES (%s, %s, %s, %s) RETURNING *"
-                data = [original_url, short_url, token_url, creator_id]
+                sql_statements = "INSERT INTO urls (original_url, short_url, secret_access_token, creator_id) VALUES (%s, %s, %s, %s) RETURNING *"
+                data = [original_url, short_url, secret_access_token, creator_id]
                 cursor.execute(sql_statements, data)
                 result = cursor.fetchone()
                 return result
@@ -157,4 +157,3 @@ class Database:
         except Exception as err:
             print("Delete URL DB Error: ", err)
             raise err
-    
