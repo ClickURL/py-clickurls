@@ -82,7 +82,7 @@ class Database:
         try:
             with db.connect(self.url) as conection:
                 cursor = conection.cursor(cursor_factory=extras.RealDictCursor)
-                sql_statements = "SELECT * FROM urls WHERE "+column+" = %s"
+                sql_statements = "SELECT * FROM urls WHERE " + column + " = %s"
                 data = [value]
                 cursor.execute(sql_statements, data)
                 result = cursor.fetchone()
@@ -156,4 +156,61 @@ class Database:
                 return result
         except Exception as err:
             print("Delete URL DB Error: ", err)
+            raise err
+        
+    def get_all_views(self):
+        try:
+            with db.connect(self.url) as conection:
+                cursor = conection.cursor(cursor_factory=extras.RealDictCursor)
+                sql_statements = "SELECT * FROM hour_views"
+                cursor.execute(sql_statements)
+                result = cursor.fetchall()
+                return result
+        except Exception as err:
+            print("Get Click DB Error: ", err)
+            raise err
+    
+    def get_views_by_url(self, link_id):
+        try:
+            with db.connect(self.url) as conection:
+                cursor = conection.cursor(cursor_factory=extras.RealDictCursor)
+                sql_statements = "SELECT * FROM hour_views WHERE link_id = %s"
+                data = [link_id]
+                cursor.execute(sql_statements, data)
+                result = cursor.fetchall()
+                return result
+        except Exception as err:
+            print("Get Click DB Error: ", err)
+            raise err
+    
+    def get_views_group_by_time(self, secret_access_token):
+        try:
+            with db.connect(self.url) as conection:
+                cursor = conection.cursor(cursor_factory=extras.RealDictCursor)
+                sql_statements = """
+                SELECT date_trunc('hours', time) AS day_views, COUNT(link_id) AS count_views FROM hour_views
+                WHERE link_id = (SELECT url_id FROM urls
+                    WHERE secret_access_token = %s
+                )
+                GROUP BY link_id, day_views
+                """
+                data = [secret_access_token]
+                cursor.execute(sql_statements, data)
+                result = cursor.fetchall()
+                return result
+        except Exception as err:
+            print("Get Click GROUP by time DB Error: ", err)
+            raise err
+    
+    def create_view(self, link_id):
+        try:
+            with db.connect(self.url) as conection:
+                cursor = conection.cursor(cursor_factory=extras.RealDictCursor)
+                sql_statements = "INSERT INTO hour_views (link_id) VALUES (%s) RETURNING *"
+                data = [link_id]
+                cursor.execute(sql_statements, data)
+                result = cursor.fetchone()
+                return result
+        except Exception as err:
+            print("Create Click DB Error: ", err)
             raise err

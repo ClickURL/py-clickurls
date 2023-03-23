@@ -27,3 +27,11 @@ INSERT INTO urls (original_url, short_url, secret_access_token, creator_id) VALU
 ('first url', 'first_short_code', 'a8098c1a-f86e-11da-bd1a-00112444be1e', 1),
 ('second url', 'second_short_code', 'a8098c1a-f86e-11da-bd1a-00112444be2e', 2),
 ('third url', 'third_short_code', 'a8098c1a-f86e-11da-bd1a-00112444be3e', 3);
+
+CREATE TABLE IF NOT EXISTS hour_views (
+    view_id SERIAL,
+    time TIMESTAMP DEFAULT NOW(),
+    link_id INTEGER,
+    PRIMARY KEY (view_id),
+    FOREIGN KEY (link_id) REFERENCES urls(url_id) ON DELETE CASCADE
+)

@@ -32,7 +32,7 @@ class UrlCrud:
         urls_return = [Url(**value) for value in result]
         return urls_return
     
-    def get_url_by_creator(self, creator_id):
+    def get_urls_by_creator(self, creator_id):
         result = self.db.get_urls_by_user(creator_id)
         urls_return = [Url(**value) for value in result]
         return urls_return

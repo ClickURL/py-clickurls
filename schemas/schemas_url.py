@@ -11,6 +11,8 @@ class UrlBase(BaseModel):
 class UrlGet(UrlBase):
     id: int
     created_at: datetime
+    short_url_full: str
+    secret_access_token_full: str
     
 class UrlPost(UrlBase):
     pass
