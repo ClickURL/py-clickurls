@@ -136,7 +136,7 @@ def delete_url_by_id(id: int):
 # URL redirect side router
 # ________________________________________________________________
 
-@app.get("/{short_url}")
+@app.get("/2{short_url}/")
 def redirect_to_long_url(short_url: str):
     try:
         result = UrlCrud().get_url_by_column("short_url", short_url)

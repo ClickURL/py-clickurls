@@ -188,10 +188,10 @@ class Database:
             with db.connect(self.url) as conection:
                 cursor = conection.cursor(cursor_factory=extras.RealDictCursor)
                 sql_statements = """
-                SELECT date_trunc('hours', time) AS day_views, COUNT(link_id) AS count_views FROM hour_views
+                SELECT date(date_trunc('days', time)) AS day_views, COUNT(link_id) AS count_views FROM hour_views
                 WHERE link_id = (SELECT url_id FROM urls
                     WHERE secret_access_token = %s
-                )
+                ) and time >= current_date - interval '1 month'
                 GROUP BY link_id, day_views
                 """
                 data = [secret_access_token]
