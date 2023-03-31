@@ -1,11 +1,12 @@
 import uvicorn
-from fastapi import FastAPI, HTTPException, status
-from fastapi.responses import RedirectResponse
+import json
+from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 
 from config import settings
-from models.model_user import User
-from models.model_url import Url
 from schemas import schemas_user, schemas_url
 from crud.crud_user import UserCrud
 from crud.crud_url import UrlCrud
@@ -25,19 +26,64 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+app.mount("/py-clickurl", StaticFiles(directory="./frontend/", html = True), name="static")
+templates = Jinja2Templates(directory = "./frontend/public")
 
 @app.get("/")
-def root():
-    return "Hello World!"
+def main(request: Request):
+    return templates.TemplateResponse("create_url.html", {"request": request})
+
+@app.get("/edit/{secret_access_token}", response_class=HTMLResponse)
+def edit(secret_access_token: str, request: Request):
+    return templates.TemplateResponse("edit_url.html", {"request": request}, headers={'secret_access_token': secret_access_token})
 
 
-@app.get("/test/")
-def test():
-    hostname = ViewCrud().get_all_views()
-    return {"views": hostname}
+@app.get("/hello_world")
+def root(response: Response,):
+    response.headers["X-Cat-Dog"] = "alone in the world"
+    return "sadasdas"
+
+@app.get("/{short_url}/")
+def redirect_to_long_url(short_url: str):
+    try:
+        result = UrlCrud().get_url_by_column("short_url", short_url)
+        redirect_url = result.original_url
+        if redirect_url:
+            ViewCrud().create_view(result.id)
+        return RedirectResponse(redirect_url)
+    except HTTPException as e:
+        raise e.detail("Redirect to original URL ERROR")
+
+@app.get("/api/edit/{secret_access_token}", response_model=schemas_url.UrlEditPage)
+def edit_url(secret_access_token: str):
+    try:
+        result = UrlCrud().get_url_by_column("secret_access_token", secret_access_token)
+        return result
+    except HTTPException as e:
+        raise e.detail("EDIT URL ERROR")
+
+@app.get("/api/v1/{secret_access_token}/stats.json")
+def get_stats(secret_access_token: str):
+    try:
+        result = ViewCrud().get_stats_group_by_time(secret_access_token)
+        return {"views_stats": result}
+    except HTTPException as e:
+        raise e.detail("GET stats URL ERROR")
+
+@app.post("/api/create_url/", response_model=schemas_url.UrlEditPage)
+def create_url(input: schemas_url.UrlPost):
+    try:
+        result = UrlCrud().create_url(input.original_url, input.creator_id)
+        return result
+    except HTTPException as e:
+        raise e.detail("POST URL ERROR")
+
+
 
 # User side router, to interact with the entity User (for testing)
+# ________________________________________________________________
+# ________________________________________________________________
+# ________________________________________________________________
 # ________________________________________________________________
 
 @app.get("/users_test", response_model=list[schemas_user.UserGet])
@@ -131,46 +177,6 @@ def delete_url_by_id(id: int):
         return result
     except HTTPException as e:
         raise e.detail("Delete URL ERROR")
-
-
-# URL redirect side router
-# ________________________________________________________________
-
-@app.get("/2{short_url}/")
-def redirect_to_long_url(short_url: str):
-    try:
-        result = UrlCrud().get_url_by_column("short_url", short_url)
-        redirect_url = result.original_url
-        if redirect_url:
-            ViewCrud().create_view(result.id)
-        return RedirectResponse(redirect_url)
-    except HTTPException as e:
-        raise e.detail("Redirect to original URL ERROR")
-
-@app.get("/edit/{secret_access_token}", response_model=schemas_url.UrlEditPage)
-def edit_url(secret_access_token: str):
-    try:
-        result = UrlCrud().get_url_by_column("secret_access_token", secret_access_token)
-        return result
-    except HTTPException as e:
-        raise e.detail("EDIT URL ERROR")
-
-@app.get("/api/v1/{secret_access_token}/stats.json")
-def get_stats(secret_access_token: str):
-    try:
-        result = ViewCrud().get_stats_group_by_time(secret_access_token)
-        return {"views_stats": result}
-    except HTTPException as e:
-        raise e.detail("GET stats URL ERROR")
-
-@app.post("/main/")
-def create_url(original_url: str, creator_id: int):
-    try:
-        result = UrlCrud().create_url(original_url, creator_id)
-        redirect_url = f"/edit/{result.secret_access_token}"
-        return RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
-    except HTTPException as e:
-        raise e.detail("POST URL ERROR")
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host=hostname, port=port, reload=True)

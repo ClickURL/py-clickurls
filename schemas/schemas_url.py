@@ -15,16 +15,17 @@ class UrlGet(UrlBase):
     secret_access_token_full: str
     
 class UrlPost(UrlBase):
-    pass
+    creator_id: int
 
 class UrlUpdate(UrlGet):
     updated_at: datetime
 
-class UrlDelete(UrlUpdate):
+class UrlDelete(UrlGet):
     deleted_at: datetime
     
 class UrlEditPage(BaseModel):
-    short_url_full: str
+    short_url: str
+    secret_access_token: UUID
     secret_access_token_full: str
 
     class Config:
