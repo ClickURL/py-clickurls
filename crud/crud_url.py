@@ -1,7 +1,8 @@
 from db.database import Database
 from models.model_url import Url
-from models.model_access_token import generate_access_token
-from models.model_gen_short import generate_short_url
+from services.access_token import generate_access_token
+from services.gen_short import generate_short_url
+from services.url_validator import url_validator
 
 class UrlCrud:
     
@@ -39,6 +40,9 @@ class UrlCrud:
         
     def create_url(self, orignal_url, creator_id):
         condition = True
+        check_domain = url_validator(orignal_url)
+        if not check_domain:
+            raise Exception("Sorry, this domain is on the banned list")
         while condition:
             short_code = generate_short_url()
             if type(self.get_url_by_column("short_url", short_code)) is str:

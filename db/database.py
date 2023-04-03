@@ -193,6 +193,7 @@ class Database:
                     WHERE secret_access_token = %s
                 ) and time >= current_date - interval '1 month'
                 GROUP BY link_id, day_views
+                ORDER BY day_views
                 """
                 data = [secret_access_token]
                 cursor.execute(sql_statements, data)
@@ -213,4 +214,17 @@ class Database:
                 return result
         except Exception as err:
             print("Create Click DB Error: ", err)
+            raise err
+    
+    def get_prohibited(self, prohibited):
+        try:
+            with db.connect(self.url) as conection:
+                cursor = conection.cursor()
+                sql_statements = "SELECT domain FROM prohibited_domain WHERE domain = %s"
+                data = [prohibited]
+                cursor.execute(sql_statements, data)
+                result = cursor.fetchone()
+                return result
+        except Exception as err:
+            print("Prohibited check DB Error: ", err)
             raise err

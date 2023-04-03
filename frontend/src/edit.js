@@ -9,17 +9,28 @@ async function EditUrl() {
     });
     if (response.ok) {
         const result = await response.json();
-        const row_short_url = document.createElement('div');
-        const row_token_url = document.createElement('div');
-        row_short_url.append(locations + "/" + result.short_url);
-        row_token_url.append(locations + "/edit/" + result.secret_access_token);
-        document.getElementById('table').append(row_short_url);
-        document.getElementById('table').append(row_token_url);
+        AddItem(locations + "/" + result.short_url);
+        AddItem(locations + "/edit/" + result.secret_access_token);
     }
     else {
         const error = await response.json();
         console.log(error.message);
     }
+}
+
+function AddItem(item) {
+    const div_url = document.createElement('div');
+    const ref_url = document.createElement('a');
+    ref_url.append(item);
+    ref_url.setAttribute('href', item);
+    div_url.append(ref_url);
+    const copy_button = document.createElement('button');
+    copy_button.append("Copy");
+    copy_button.addEventListener("click" , () => {
+        navigator.clipboard.writeText(item);
+    });
+    div_url.appendChild(copy_button);
+    document.getElementById('table').append(div_url);
 }
 
 function GetTokenFromHeader() {
@@ -29,8 +40,6 @@ function GetTokenFromHeader() {
     const headers = req.getResponseHeader("secret_access_token");
     return headers;
 }
-
-
 
 function PlotStats() {
     const request_stats = locations + "/api/v1/" + secret_access_token + "/stats.json";
@@ -59,7 +68,7 @@ function PlotStats() {
     }
     const data = [trace];
     const layout = {
-        title: 'Time Series with Rangeslider',
+        title: 'Stats',
         xaxis: {
             autorange: true,
             range: ['2023-03-01', '2032-03-31'],
@@ -84,7 +93,7 @@ function PlotStats() {
             type: 'date'
         },
         yaxis: {
-            autorange: false,
+            autorange: true,
             type: 'linear'
         }
     };
