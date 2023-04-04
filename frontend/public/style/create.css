@@ -1,0 +1,136 @@
+body {
+    font-family: "Lato", sans-serif;
+    margin:0;
+    
+    background: linear-gradient(100deg, #6f09ee 0%, #55c7ee 50%, #0f2027 100%);
+    background-size: 150% 100%;
+    animation: changeGradiend 8s linear infinite;
+    animation-direction: alternate;
+}
+
+@keyframes changeGradiend {
+    0% {background-position: 0%}
+    100% {background-position: 100%}
+}
+
+#main-page {
+    transition: margin-left .5s;
+    display: flex; 
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.header {
+    height: 100px;
+    display: flex;
+    justify-content:space-between;
+    text-align: center;
+    align-items: center;
+    position: relative;
+}
+
+.flex-element {
+    flex: 0 1 33.333%;
+}
+
+.header .name-logo a{
+    font-size: 45px;
+    position: relative;
+    top: 50%;
+    color: #ff494a;
+}
+
+.logo {
+    font-size: 40px;
+}
+.logo img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#input_user_id {
+    color: #333;
+    margin: 0 auto;
+    border-radius: 0.4rem;
+    background-color: rgb(255, 255, 255);
+    border: none;
+    width: 20%;
+    display: block;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.main {
+    display: flex;
+    justify-content: center;
+}
+
+.create-shorturl {
+    text-align: center;
+    margin: 30px;
+    padding-top: 70px;
+}
+.create-shorturl a {
+    color: #bbb4d8;
+    font-size: 30px;
+}
+
+.create-shorturl *{
+    top: 30%;
+    margin: 10px auto;
+}
+
+#input-form {
+    display: flex; 
+    flex-direction: column;
+}
+
+#input-form input {
+    width: 100px;
+    height: 30px;
+    border: 1px solid #0f0e20;
+    border-radius: 15px;
+    text-align: center;
+    transition-duration: 1s;
+    transition-property: width;
+}
+#input-form input:focus {
+    width: 370px;
+    transition-duration: 1s;
+    transition-property: width;
+}
+
+#create_button {
+    height: 70px;
+    width: 70px;
+    border: 2px solid #0f0e20;
+    border-radius: 35px;
+    background-color: #00000067;
+    box-shadow: 0px 0px 20px 7px #00000067;
+    color:rgb(122, 245, 122);
+    font-size: 28px;
+}
+
+.line {
+    height: 3px;
+    background: #0000005d;
+    width: 80%;
+    margin: 0 auto;
+    box-shadow: 0px 10px 20px 4px #00000067;
+}
+
+.footer {
+    height: 70px;
+    margin-top: auto;
+    top: 50%;
+}
+
+.footer h2 {
+    top: 50%;
+    text-align: center;
+    color: #8078d4;
+}

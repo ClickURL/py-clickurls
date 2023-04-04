@@ -4,23 +4,38 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/py-clickurl/public/style/create.css">
     <title>Document</title>
 </head>
 <body>
-    <header class="header">
-        <div class="flex-element authorization">
-            <h2>Authorization</h4>
-            <input type="number" id="User_Id" placeholder="User Id">  
-            <input type="submit" value="Submit ID">    
-        </div>
-    </header>
-    <main id="main" class="main">
-        <div class="create-shorturl">
-            <h3>Create short URL</h3>
-            <input type="text" id="Long_URL" placeholder="Your long URL">
-            <button onclick="Create()">Create</button>  
-        </div>
-    </main>
+    <section id="main-page">
+        <header class="header">
+            <div class="flex-element logo">
+                <img class="header-logo" src="/py-clickurl/public/image/logo_192x192.png" alt="logo">
+            </div>
+            <div class="flex-element name-logo">
+                <a id="logo_ref">py-clickurl</a>
+            </div>
+            <div class="flex-element authorization">
+                <input id="input_user_id" type="text" placeholder="User Id">  
+                <input id="submit_user_id" type="submit" style="display:none;">    
+            </div>
+        </header>
+        <div class="line"></div>
+        <main id="main" class="main">
+            <div class="create-shorturl">
+                <a>Create short URL</a>
+                <div id="input-form">
+                    <input type="text" id="Long_URL" placeholder="Your long URL">
+                    <button id="create_button" onclick="Create()">GO</button>
+                </div>
+            </div>
+        </main>
+        <footer class="footer">
+            <div class="line"></div>
+            <h2>footer</h2>
+        </footer>
+    </section>
     <script src="/py-clickurl/src/app.js"></script>
 </body>
 </html>

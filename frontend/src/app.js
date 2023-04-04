@@ -1,6 +1,6 @@
 function Create() {
     let long_url = document.getElementById("Long_URL").value;
-    let user_id = document.getElementById("User_Id").value;
+    let user_id = document.getElementById("input_user_id").value;
     CreateShortUrl(long_url, user_id);
 }
 
@@ -24,3 +24,11 @@ async function CreateShortUrl(long_url, user_id) {
         console.log(error.message);
     }
 }
+
+const submit_button = document.getElementById("input_user_id");
+submit_button.addEventListener("keyup", (event) => {
+    if (event.key === "Enter")
+    {
+        document.getElementById("submit_user_id").click();
+    }
+});

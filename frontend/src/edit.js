@@ -70,30 +70,9 @@ function PlotStats() {
     const layout = {
         title: 'Stats',
         xaxis: {
-            autorange: true,
-            range: ['2023-03-01', '2032-03-31'],
-            rangeselector: {buttons: [
-                {
-                    count: 1,
-                    label: '1d',
-                    step: 'day',
-                    stepmode: 'backward'
-                },
-                {
-                    count: 6,
-                    label: '6d',
-                    step: 'day',
-                    stepmode: 'backward'
-                },
-                {
-                    step: 'all'
-                }
-            ]},
-            rangeslider: {range: ['2023-03-01', '2023-03-31']},
             type: 'date'
         },
         yaxis: {
-            autorange: true,
             type: 'linear'
         }
     };
