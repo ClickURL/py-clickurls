@@ -20,6 +20,7 @@ async function EditUrl() {
 
 function AddItem(item) {
     const div_url = document.createElement('div');
+    div_url.setAttribute('id', 'table_row');
     const ref_url = document.createElement('a');
     ref_url.append(item);
     ref_url.setAttribute('href', item);
@@ -49,39 +50,73 @@ function PlotStats() {
         rows_in.views_stats.forEach(function(row) {
         results.push(row.day_views)
         })
+        if (results.length == 0) {
+            results = [new Date().toISOString().slice(0, 10)];
+        }
         return results;
     };
     function get_views(rows_in){
         let results = [];
         rows_in.views_stats.forEach(function(row) {
         results.push(row.count_views)
-        })
+        });
+        if (results.length == 0) {
+            results = [0];
+        }
         return results;
     };
     const trace = {
         type: "scatter",
-        mode: "lines",
+        mode: "lines+markers",
         name: 'Stats',
         x: get_date(rows),
         y: get_views(rows),
-        line: {color: '#17BECF'}
+        fill: 'tozeroy',
+        fillcolor: 'rgba(0, 0, 0, 0.15)',
+        line: {
+            shape: 'spline',
+            width: 3,
+            color: 'rgba(61, 215, 207, 1)'
+        }
     }
     const data = [trace];
     const layout = {
         title: 'Stats',
+        titlefont: {
+            color: 'white'
+        },
         xaxis: {
-            type: 'date'
+            type: 'date',
+            autotick: false,
+            showgrid: false,
+            tickfont: {
+                color: 'white'
+            },
+            linecolor: 'black',
+            linewidth: 2,
         },
         yaxis: {
-            type: 'linear'
-        }
+            type: 'linear',
+            tickfont: {
+                color: 'white'
+            },
+            linecolor: 'black',
+            linewidth: 2,
+            gridcolor: 'black',
+            gridwidth: 1,
+            showline: false,
+        },
+        paper_bgcolor: 'rgba(255, 255, 255, 0)',
+        plot_bgcolor: 'rgba(255, 255, 255, 0)'
     };
 
-    Plotly.newPlot('stats', data, layout);
+    const config = {displaylogo: false, responsive: true};
+
+    Plotly.newPlot('stats', data, layout, config);
     })
 }
 
-let update_button = document.getElementById('UpdateStats');
+let update_button = document.getElementById('update_button');
 
 update_button.addEventListener('click', function() {
     PlotStats();

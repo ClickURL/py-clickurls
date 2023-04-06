@@ -6,12 +6,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.plot.ly/plotly-2.20.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+    <link rel="stylesheet" href="/py-clickurl/public/style/edit.css">
     <title>Document</title>
 </head>
 <body>
-    <div id="table"></div>
-    <div id="stats"></div>
-    <button id="UpdateStats">Update stats</button>
+    <section id="main-page">
+        <header class="header">
+            <div class="flex-element logo">
+                <img class="header-logo" src="/py-clickurl/public/image/logo_192x192.png" alt="logo">
+            </div>
+            <div class="flex-element name-logo">
+                <a id="logo_ref">py-clickurl</a>
+            </div>
+            <div class="flex-element authorization">
+                <input id="input_user_id" type="text" placeholder="User Id">  
+                <input id="submit_user_id" type="submit" style="display:none;">    
+            </div>
+        </header>
+        <div class="line"></div>
+        <main id="main" class="main">
+            <div id="table"></div>
+            <div id="stats"></div>
+            <div id="button">
+                <button id="update_button">
+                    <img class="button-img" src="/py-clickurl/public/image/refresh.svg" alt="update">
+                </button>
+            </div>
+        </main>
+        <footer class="footer">
+            <div class="line"></div>
+            <h2>footer</h2>
+        </footer>
+    </section>
+    
     <script src="/py-clickurl/src/edit.js"></script>
 </body>
 </html>
