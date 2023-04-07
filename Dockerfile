@@ -10,9 +10,6 @@ COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 RUN ln -sf /bin/bash /bin/sh
 
-
-
-
 COPY . .
 
 RUN make roll-migration

@@ -1,527 +1,0 @@
-[33mcommit 799d8c31dc1787018a95f05a6c48a48007a6905d[m[33m ([m[1;36mHEAD -> [m[1;32mrailway_deploy[m[33m, [m[1;31morigin/railway_deploy[m[33m)[m
-Author: Mykhailo <rosmisha@gmail.com>
-Date:   Sat Apr 8 00:03:46 2023 +0300
-
-    add middleware
-
-[1mdiff --git a/main.py b/main.py[m
-[1mindex ee46384..bfb08c0 100644[m
-[1m--- a/main.py[m
-[1m+++ b/main.py[m
-[36m@@ -5,6 +5,8 @@[m [mfrom fastapi.middleware.cors import CORSMiddleware[m
- from fastapi.templating import Jinja2Templates[m
- from fastapi.staticfiles import StaticFiles[m
- [m
-[32m+[m[32mfrom fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware[m[41m[m
-[32m+[m[41m[m
- from config import settings[m
- from schemas import schemas_user, schemas_url[m
- from crud.crud_user import UserCrud[m
-[36m@@ -16,6 +18,9 @@[m [mport = settings.port[m
- [m
- app = FastAPI()[m
- [m
-[32m+[m[32mapp.add_middleware(HTTPSRedirectMiddleware)[m[41m[m
-[32m+[m[41m[m
-[32m+[m[41m[m
- origins = ["*"][m
- [m
- app.add_middleware([m
-
-[33mcommit d45f04e07f510e036ce736ee0972adb2f031e08f[m
-Author: Mykhailo <rosmisha@gmail.com>
-Date:   Fri Apr 7 23:32:29 2023 +0300
-
-    try add https
-
-[1mdiff --git a/main.py b/main.py[m
-[1mindex f9d3821..ee46384 100644[m
-[1m--- a/main.py[m
-[1m+++ b/main.py[m
-[36m@@ -181,4 +181,4 @@[m [mdef delete_url_by_id(id: int):[m
- [m
- [m
- if __name__ == "__main__":[m
-[31m-    uvicorn.run("main:app", host=hostname, port=port, ssl_keyfile="./key.pem", ssl_certfile="./cert.pem")[m
-[32m+[m[32m    uvicorn.run("main:app", host=hostname, port=port)[m[41m[m
-
-[33mcommit cb6dd7d86e06952803195d9f517a0af00a76c618[m
-Author: Mykhailo <rosmisha@gmail.com>
-Date:   Fri Apr 7 23:23:13 2023 +0300
-
-    try add https
-
-[1mdiff --git a/main.py b/main.py[m
-[1mindex ce71fd3..f9d3821 100644[m
-[1m--- a/main.py[m
-[1m+++ b/main.py[m
-[36m@@ -181,4 +181,4 @@[m [mdef delete_url_by_id(id: int):[m
- [m
- [m
- if __name__ == "__main__":[m
-[31m-    uvicorn.run("main:app", host=hostname, port=port, reload=True)[m
-[32m+[m[32m    uvicorn.run("main:app", host=hostname, port=port, ssl_keyfile="./key.pem", ssl_certfile="./cert.pem")[m[41m[m
-
-[33mcommit b4861677e6d94aeddf9f9c30c81cd0bb0013d5e9[m
-Author: Mykhailo <rosmisha@gmail.com>
-Date:   Fri Apr 7 23:08:50 2023 +0300
-
-    chande dokerfile delete run python
-
-[1mdiff --git a/Dockerfile b/Dockerfile[m
-[1mindex 8116b4e..a163556 100644[m
-[1m--- a/Dockerfile[m
-[1m+++ b/Dockerfile[m
-[36m@@ -15,5 +15,4 @@[m [mRUN ln -sf /bin/bash /bin/sh[m
- [m
- COPY . .[m
- [m
-[31m-RUN make roll-migration[m
-[31m-RUN python main.py[m
-\ No newline at end of file[m
-[32m+[m[32mRUN make roll-migration[m
-\ No newline at end of file[m
-
-[33mcommit 7227676073df9f85ce9ccc0c12ba1d3523fd6f45[m
-Author: Mykhailo <rosmisha@gmail.com>
-Date:   Fri Apr 7 23:04:39 2023 +0300
-
-    change dockerfile
-
-[1mdiff --git a/yoyo.ini b/yoyo.ini[m
-[1mindex 435be14..ddab4fe 100644[m
-[1m--- a/yoyo.ini[m
-[1m+++ b/yoyo.ini[m
-[36m@@ -1,7 +1,7 @@[m
- [DEFAULT][m
- sources = migration[m
- # database = postgresql://postgres:qwerty12345@localhost:5432/py_clicks_db # for running on venv [m
-[31m-database = postgresql://postgres:qwerty12345@postgresDB:5432/py_clicks_db[m
-[32m+[m[32mdatabase = postgresql://postgres:QLJz9aRCJT945JSOsixW@containers-us-west-22.railway.app:5867/railway[m[41m[m
- batch_mode = off[m
- verbosity = 0[m
- [m
-
-[33mcommit 520d5ba83db2b8ec36ce1e2084896d6a108d2cbb[m
-Author: Mykhailo <rosmisha@gmail.com>
-Date:   Fri Apr 7 23:00:18 2023 +0300
-
-    change dockerfile
-
-[1mdiff --git a/Dockerfile b/Dockerfile[m
-[1mindex 294c21c..8116b4e 100644[m
-[1m--- a/Dockerfile[m
-[1m+++ b/Dockerfile[m
-[36m@@ -10,8 +10,10 @@[m [mCOPY requirements.txt requirements.txt[m
- RUN pip install -r requirements.txt[m
- RUN ln -sf /bin/bash /bin/sh[m
- [m
-[31m-RUN make roll-migration[m
-[31m-RUN python main.py[m
-[32m+[m[41m[m
- [m
- [m
- COPY . .[m
-[32m+[m[41m[m
-[32m+[m[32mRUN make roll-migration[m[41m[m
-[32m+[m[32mRUN python main.py[m
-\ No newline at end of file[m
-
-[33mcommit c732c287b2a5b19bdb755d5b8e24c064dc374dd3[m
-Author: Mykhailo <rosmisha@gmail.com>
-Date:   Fri Apr 7 22:56:02 2023 +0300
-
-    change dockerfile
-
-[1mdiff --git a/Dockerfile b/Dockerfile[m
-[1mindex 1eaf2a2..294c21c 100644[m
-[1m--- a/Dockerfile[m
-[1m+++ b/Dockerfile[m
-[36m@@ -10,4 +10,8 @@[m [mCOPY requirements.txt requirements.txt[m
- RUN pip install -r requirements.txt[m
- RUN ln -sf /bin/bash /bin/sh[m
- [m
-[32m+[m[32mRUN make roll-migration[m[41m[m
-[32m+[m[32mRUN python main.py[m[41m[m
-[32m+[m[41m[m
-[32m+[m[41m[m
- COPY . .[m
-
-[33mcommit 38a243128f8d559cd35f93d415dca26ff288a127[m
-Author: Mykhailo <rosmisha@gmail.com>
-Date:   Fri Apr 7 22:52:01 2023 +0300
-
-    prepare to deployd
-
-[1mdiff --git a/.env b/.env[m
-[1mindex f6ac5c4..d7280fe 100644[m
-[1m--- a/.env[m
-[1m+++ b/.env[m
-[36m@@ -1,5 +1,6 @@[m
- # DATABASE_URL="postgresql://postgres:qwerty12345@localhost:5432/py_clicks_db" # for running on venv [m
-[31m-DATABASE_URL="postgresql://postgres:qwerty12345@postgresDB:5432/py_clicks_db"[m
-[32m+[m[32m# DATABASE_URL="postgresql://postgres:qwerty12345@postgresDB:5432/py_clicks_db"[m[41m[m
-[32m+[m[32mDATABASE_URL="postgresql://postgres:QLJz9aRCJT945JSOsixW@containers-us-west-22.railway.app:5867/railway"[m[41m[m
- POSTGRES_USER="postgres"[m
- POSTGRES_PASSWORD="qwerty12345"[m
- POSTGRES_DB="py_clicks_db"[m
-
-[33mcommit 902a21e56761df8ed3562a6c940d1bde5af047e1[m[33m ([m[1;31morigin/shorturl_task_1[m[33m, [m[1;32mshorturl_task_1[m[33m)[m
-Author: Mykhailo <rosmisha@gmail.com>
-Date:   Fri Apr 7 20:04:47 2023 +0300
-
-    #1 prepared work with docker compos
-
-[1mdiff --git a/.env b/.env[m
-[1mnew file mode 100644[m
-[1mindex 0000000..f6ac5c4[m
-[1m--- /dev/null[m
-[1m+++ b/.env[m
-[36m@@ -0,0 +1,9 @@[m
-[32m+[m[32m# DATABASE_URL="postgresql://postgres:qwerty12345@localhost:5432/py_clicks_db" # for running on venv[m[41m [m
-[32m+[m[32mDATABASE_URL="postgresql://postgres:qwerty12345@postgresDB:5432/py_clicks_db"[m[41m[m
-[32m+[m[32mPOSTGRES_USER="postgres"[m[41m[m
-[32m+[m[32mPOSTGRES_PASSWORD="qwerty12345"[m[41m[m
-[32m+[m[32mPOSTGRES_DB="py_clicks_db"[m[41m[m
-[32m+[m[32m# LOCALHOST=localhost # for running on venv[m[41m [m
-[32m+[m[32mLOCALHOST=0.0.0.0[m[41m[m
-[32m+[m[32mPORT=8000[m[41m[m
-[32m+[m[32mPORT_DB=5432[m
-\ No newline at end of file[m
-[1mdiff --git a/.gitignore b/.gitignore[m
-[1mindex b6e4761..3b412af 100644[m
-[1m--- a/.gitignore[m
-[1m+++ b/.gitignore[m
-[36m@@ -1,129 +1,129 @@[m
-[31m-# Byte-compiled / optimized / DLL files[m
-[31m-__pycache__/[m
-[31m-*.py[cod][m
-[31m-*$py.class[m
-[31m-[m
-[31m-# C extensions[m
-[31m-*.so[m
-[31m-[m
-[31m-# Distribution / packaging[m
-[31m-.Python[m
-[31m-build/[m
-[31m-develop-eggs/[m
-[31m-dist/[m
-[31m-downloads/[m
-[31m-eggs/[m
-[31m-.eggs/[m
-[31m-lib/[m
-[31m-lib64/[m
-[31m-parts/[m
-[31m-sdist/[m
-[31m-var/[m
-[31m-wheels/[m
-[31m-pip-wheel-metadata/[m
-[31m-share/python-wheels/[m
-[31m-*.egg-info/[m
-[31m-.installed.cfg[m
-[31m-*.egg[m
-[31m-MANIFEST[m
-[31m-[m
-[31m-# PyInstaller[m
-[31m-#  Usually these files are written by a python script from a template[m
-[31m-#  before PyInstaller builds the exe, so as to inject date/other infos into it.[m
-[31m-*.manifest[m
-[31m-*.spec[m
-[31m-[m
-[31m-# Installer logs[m
-[31m-pip-log.txt[m
-[31m-pip-delete-this-directory.txt[m
-[31m-[m
-[31m-# Unit test / coverage reports[m
-[31m-htmlcov/[m
-[31m-.tox/[m
-[31m-.nox/[m
-[31m-.coverage[m
-[31m-.coverage.*[m
-[31m-.cache[m
-[31m-nosetests.xml[m
-[31m-coverage.xml[m
-[31m-*.cover[m
-[31m-*.py,cover[m
-[31m-.hypothesis/[m
-[31m-.pytest_cache/[m
-[31m-[m
-[31m-# Translations[m
-[31m-*.mo[m
-[31m-*.pot[m
-[31m-[m
-[31m-# Django stuff:[m
-[31m-*.log[m
-[31m-local_settings.py[m
-[31m-db.sqlite3[m
-[31m-db.sqlite3-journal[m
-[31m-[m
-[31m-# Flask stuff:[m
-[31m-instance/[m
-[31m-.webassets-cache[m
-[31m-[m
-[31m-# Scrapy stuff:[m
-[31m-.scrapy[m
-[31m-[m
-[31m-# Sphinx documentation[m
-[31m-docs/_build/[m
-[31m-[m
-[31m-# PyBuilder[m
-[31m-target/[m
-[31m-[m
-[31m-# Jupyter Notebook[m
-[31m-.ipynb_checkpoints[m
-[31m-[m
-[31m-# IPython[m
-[31m-profile_default/[m
-[31m-ipython_config.py[m
-[31m-[m
-[31m-# pyenv[m
-[31m-.python-version[m
-[31m-[m
-[31m-# pipenv[m
-[31m-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.[m
-[31m-#   However, in case of collaboration, if having platform-specific dependencies or dependencies[m
-[31m-#   having no cross-platform support, pipenv may install dependencies that don't work, or not[m
-[31m-#   install all needed dependencies.[m
-[31m-#Pipfile.lock[m
-[31m-[m
-[31m-# PEP 582; used by e.g. github.com/David-OConnor/pyflow[m
-[31m-__pypackages__/[m
-[31m-[m
-[31m-# Celery stuff[m
-[31m-celerybeat-schedule[m
-[31m-celerybeat.pid[m
-[31m-[m
-[31m-# SageMath parsed files[m
-[31m-*.sage.py[m
-[31m-[m
-[31m-# Environments[m
-[31m-.env[m
-[31m-.venv[m
-[31m-env/[m
-[31m-venv/[m
-[31m-ENV/[m
-[31m-env.bak/[m
-[31m-venv.bak/[m
-[31m-[m
-[31m-# Spyder project settings[m
-[31m-.spyderproject[m
-[31m-.spyproject[m
-[31m-[m
-[31m-# Rope project settings[m
-[31m-.ropeproject[m
-[31m-[m
-[31m-# mkdocs documentation[m
-[31m-/site[m
-[31m-[m
-[31m-# mypy[m
-[31m-.mypy_cache/[m
-[31m-.dmypy.json[m
-[31m-dmypy.json[m
-[31m-[m
-[31m-# Pyre type checker[m
-[31m-.pyre/[m
-[32m+[m[32m# Byte-compiled / optimized / DLL files[m[41m[m
-[32m+[m[32m__pycache__/[m[41m[m
-[32m+[m[32m*.py[cod][m[41m[m
-[32m+[m[32m*$py.class[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# C extensions[m[41m[m
-[32m+[m[32m*.so[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# Distribution / packaging[m[41m[m
-[32m+[m[32m.Python[m[41m[m
-[32m+[m[32mbuild/[m[41m[m
-[32m+[m[32mdevelop-eggs/[m[41m[m
-[32m+[m[32mdist/[m[41m[m
-[32m+[m[32mdownloads/[m[41m[m
-[32m+[m[32meggs/[m[41m[m
-[32m+[m[32m.eggs/[m[41m[m
-[32m+[m[32mlib/[m[41m[m
-[32m+[m[32mlib64/[m[41m[m
-[32m+[m[32mparts/[m[41m[m
-[32m+[m[32msdist/[m[41m[m
-[32m+[m[32mvar/[m[41m[m
-[32m+[m[32mwheels/[m[41m[m
-[32m+[m[32mpip-wheel-metadata/[m[41m[m
-[32m+[m[32mshare/python-wheels/[m[41m[m
-[32m+[m[32m*.egg-info/[m[41m[m
-[32m+[m[32m.installed.cfg[m[41m[m
-[32m+[m[32m*.egg[m[41m[m
-[32m+[m[32mMANIFEST[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# PyInstaller[m[41m[m
-[32m+[m[32m#  Usually these files are written by a python script from a template[m[41m[m
-[32m+[m[32m#  before PyInstaller builds the exe, so as to inject date/other infos into it.[m[41m[m
-[32m+[m[32m*.manifest[m[41m[m
-[32m+[m[32m*.spec[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# Installer logs[m[41m[m
-[32m+[m[32mpip-log.txt[m[41m[m
-[32m+[m[32mpip-delete-this-directory.txt[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# Unit test / coverage reports[m[41m[m
-[32m+[m[32mhtmlcov/[m[41m[m
-[32m+[m[32m.tox/[m[41m[m
-[32m+[m[32m.nox/[m[41m[m
-[32m+[m[32m.coverage[m[41m[m
-[32m+[m[32m.coverage.*[m[41m[m
-[32m+[m[32m.cache[m[41m[m
-[32m+[m[32mnosetests.xml[m[41m[m
-[32m+[m[32mcoverage.xml[m[41m[m
-[32m+[m[32m*.cover[m[41m[m
-[32m+[m[32m*.py,cover[m[41m[m
-[32m+[m[32m.hypothesis/[m[41m[m
-[32m+[m[32m.pytest_cache/[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# Translations[m[41m[m
-[32m+[m[32m*.mo[m[41m[m
-[32m+[m[32m*.pot[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# Django stuff:[m[41m[m
-[32m+[m[32m*.log[m[41m[m
-[32m+[m[32mlocal_settings.py[m[41m[m
-[32m+[m[32mdb.sqlite3[m[41m[m
-[32m+[m[32mdb.sqlite3-journal[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# Flask stuff:[m[41m[m
-[32m+[m[32minstance/[m[41m[m
-[32m+[m[32m.webassets-cache[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# Scrapy stuff:[m[41m[m
-[32m+[m[32m.scrapy[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# Sphinx documentation[m[41m[m
-[32m+[m[32mdocs/_build/[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# PyBuilder[m[41m[m
-[32m+[m[32mtarget/[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# Jupyter Notebook[m[41m[m
-[32m+[m[32m.ipynb_checkpoints[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# IPython[m[41m[m
-[32m+[m[32mprofile_default/[m[41m[m
-[32m+[m[32mipython_config.py[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# pyenv[m[41m[m
-[32m+[m[32m.python-version[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# pipenv[m[41m[m
-[32m+[m[32m#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.[m[41m[m
-[32m+[m[32m#   However, in case of collaboration, if having platform-specific dependencies or dependencies[m[41m[m
-[32m+[m[32m#   having no cross-platform support, pipenv may install dependencies that don't work, or not[m[41m[m
-[32m+[m[32m#   install all needed dependencies.[m[41m[m
-[32m+[m[32m#Pipfile.lock[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# PEP 582; used by e.g. github.com/David-OConnor/pyflow[m[41m[m
-[32m+[m[32m__pypackages__/[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# Celery stuff[m[41m[m
-[32m+[m[32mcelerybeat-schedule[m[41m[m
-[32m+[m[32mcelerybeat.pid[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# SageMath parsed files[m[41m[m
-[32m+[m[32m*.sage.py[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# Environments[m[41m[m
-[32m+[m[32m# .env[m[41m[m
-[32m+[m[32m.venv[m[41m[m
-[32m+[m[32menv/[m[41m[m
-[32m+[m[32mvenv/[m[41m[m
-[32m+[m[32mENV/[m[41m[m
-[32m+[m[32menv.bak/[m[41m[m
-[32m+[m[32mvenv.bak/[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# Spyder project settings[m[41m[m
-[32m+[m[32m.spyderproject[m[41m[m
-[32m+[m[32m.spyproject[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# Rope project settings[m[41m[m
-[32m+[m[32m.ropeproject[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# mkdocs documentation[m[41m[m
-[32m+[m[32m/site[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# mypy[m[41m[m
-[32m+[m[32m.mypy_cache/[m[41m[m
-[32m+[m[32m.dmypy.json[m[41m[m
-[32m+[m[32mdmypy.json[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32m# Pyre type checker[m[41m[m
-[32m+[m[32m.pyre/[m[41m[m
-[1mdiff --git a/Dockerfile b/Dockerfile[m
-[1mnew file mode 100644[m
-[1mindex 0000000..1eaf2a2[m
-[1m--- /dev/null[m
-[1m+++ b/Dockerfile[m
-[36m@@ -0,0 +1,13 @@[m
-[32m+[m[32mFROM python:3.11.0[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32mWORKDIR /py-clickurl_dcoker_container[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32mENV PYTHONDONTWRITEBYTECODE 1[m[41m[m
-[32m+[m[32mENV PYTHONUNBUFFERED 1[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32mCOPY requirements.txt requirements.txt[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32mRUN pip install -r requirements.txt[m[41m[m
-[32m+[m[32mRUN ln -sf /bin/bash /bin/sh[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32mCOPY . .[m[41m[m
-[1mdiff --git a/Makefile b/Makefile[m
-[1mnew file mode 100644[m
-[1mindex 0000000..ab7ca75[m
-[1m--- /dev/null[m
-[1m+++ b/Makefile[m
-[36m@@ -0,0 +1,31 @@[m
-[32m+[m[32mhelp:[m[41m[m
-[32m+[m[32m## The following commands can be used:[m[41m[m
-[32m+[m	[32m@sed -n 's/^##//p' ${MAKEFILE_LIST}[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32menv-up:[m[41m[m
-[32m+[m	[32mdocker-compose up -d --build[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32menv-down:[m[41m[m
-[32m+[m	[32mdocker-compose down[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32menv-clear:[m[41m[m
-[32m+[m	[32mdocker-compose down --remove-orphans -v # --rmi=all[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32mapp:[m[41m[m
-[32m+[m	[32mdocker exec -it py-click-application bash[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32menv-roll-migration:[m[41m[m
-[32m+[m[32m## env-roll-migration: from env roll default migrations[m[41m[m
-[32m+[m	[32mdocker exec -it py-click-application make roll-migration[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32menv-roll-back-migration:[m[41m[m
-[32m+[m[32m## env-roll-back-migration:	from env roll back to base position[m[41m[m
-[32m+[m	[32mdocker exec -it py-click-application make roll-back-migration[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32mroll-migration:[m[41m[m
-[32m+[m[32m## roll-migration:	roll default migrations[m[41m[m
-[32m+[m	[32myoyo apply --batch[m[41m[m
-[32m+[m[41m[m
-[32m+[m[32mroll-back-migration:[m[41m[m
-[32m+[m[32m## roll-back-migration:	roll back default migrations[m[41m[m
-[32m+[m	[32myoyo rollback --batch[m
-\ No newline at end of file[m
-[1mdiff --git a/Markdown_table.ipynb b/Markdown_table.ipynb[m
-[1mnew file mode 100644[m
-[1mindex 0000000..cad3407[m
-[1m--- /dev/null[m
-[1m+++ b/Markdown_table.ipynb[m
-[36m@@ -0,0 +1,30 @@[m
-[32m+[m[32m{[m
-[32m+[m[32m "cells": [[m
-[32m+[m[32m  {[m
-[32m+[m[32m   "attachments": {},[m
-[32m+[m[32m   "cell_type": "markdown",[m
-[32m+[m[32m   "metadata": {},[m
-[32m+[m[32m   "source": [[m
-[32m+[m[32m    "| edit url | short url | original url|\n",[m
-[32m+[m[32m    "|----------|-----------|-------------| \n",[m
-[32m+[m[32m    "|http://localhost:8080/edit/a8098c1a-f86e-11da-bd1a-00112444be1e|http://localhost:8080/12345|https://fastapi.tiangolo.com/|\n",[m
-[32m+[m[32m    "|http://localhost:8080/edit/a8098c1a-f86e-11da-bd1a-00112444be2e|http://localhost:8080/54321|https://plo
