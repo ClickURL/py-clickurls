@@ -2,7 +2,7 @@ body {
     font-family: "Lato", sans-serif;
     margin:0;
     
-    background: linear-gradient(100deg, #6f09ee 0%, #388c8d 50%, #0f2027 100%);
+    background: linear-gradient(100deg, #ff5400 0%, #388c8d 60%, #0f2027 100%);
     background-size: 150% 100%;
     animation: changeGradiend 8s linear infinite;
     animation-direction: alternate;

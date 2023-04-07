@@ -26,10 +26,13 @@ function AddItem(item) {
     ref_url.setAttribute('href', item);
     div_url.append(ref_url);
     const copy_button = document.createElement('button');
-    copy_button.append("Copy");
     copy_button.addEventListener("click" , () => {
         navigator.clipboard.writeText(item);
     });
+    const img_inside = document.createElement('img');
+    img_inside.setAttribute('src', "/py-clickurl/public/image/hand.png")
+    img_inside.setAttribute('class', "copy_img")
+    copy_button.append(img_inside);
     div_url.appendChild(copy_button);
     document.getElementById('table').append(div_url);
 }
