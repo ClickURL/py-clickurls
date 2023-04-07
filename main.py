@@ -5,7 +5,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
-from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 
 from config import settings
 from schemas import schemas_user, schemas_url
@@ -22,12 +21,13 @@ origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
-    HTTPSRedirectMiddleware,
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
 app.mount("/py-clickurl", StaticFiles(directory="./frontend/", html = True), name="static")
 templates = Jinja2Templates(directory = "./frontend/public")
 
@@ -133,7 +133,7 @@ def delete_user_by_id(id: int):
 # URL side router, to interact with the entity URL (for testing)
 # ________________________________________________________________
 
-@app.get("/urls_test", response_model=list[schemas_url.UrlGet])
+@app.get("/urls_test/test", response_model=list[schemas_url.UrlGet])
 def get_all_urls():
     try:
         result = UrlCrud().get_all_urls()
@@ -181,7 +181,5 @@ def delete_url_by_id(id: int):
     except HTTPException as e:
         raise e.detail("Delete URL ERROR")
 
-
-
 if __name__ == "__main__":
-    uvicorn.run("main:app", host=hostname, port=port)
+    uvicorn.run("main:app", host=hostname, port=port, reload=True)

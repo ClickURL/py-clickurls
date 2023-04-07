@@ -11,8 +11,8 @@ class UrlBase(BaseModel):
 class UrlGet(UrlBase):
     id: int
     created_at: datetime
-    short_url_full: str
-    secret_access_token_full: str
+    short_url: str
+    secret_access_token: UUID
     
 class UrlPost(UrlBase):
     creator_id: int
