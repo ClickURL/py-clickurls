@@ -2,7 +2,6 @@ const secret_access_token = GetTokenFromHeader();
 const locations = window.location.origin;
 
 async function EditUrl() {
-    // const token = localStorage.getItem('secret_access_token');
     const response = await fetch(`/api/edit/${secret_access_token}`, {
         method: 'GET',
         headers: {"Accept": "application/json"}

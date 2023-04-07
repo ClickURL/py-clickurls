@@ -12,10 +12,6 @@ class Url:
         self.deleted_at = kwargs["deleted_at"] if kwargs.get("deleted_at") else None
         self.creator_id = kwargs["creator_id"] if kwargs.get("creator_id") else None
         
-        
-        self.short_url_full = settings.localhost + ":" + str(settings.port) + "/" + self.short_url
-        self.secret_access_token_full = settings.localhost + ":" + str(settings.port) + "/edit/" + str(self.secret_access_token)
-        
     def update_url(self, new_original_url = None):
         if new_original_url:
             self.original_url = new_original_url

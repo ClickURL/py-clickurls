@@ -1,3 +1,5 @@
+const locations = window.location.origin;
+
 function Create() {
     let long_url = document.getElementById("Long_URL").value;
     let user_id = document.getElementById("input_user_id").value;
@@ -16,8 +18,7 @@ async function CreateShortUrl(long_url, user_id) {
     });
     if (response.ok) {
         const link = await response.json();
-        // localStorage.setItem('secret_access_token', link.secret_access_token)
-        location.href = 'http://'+link.secret_access_token_full;
+        location.href = locations + "/edit/" + link.secret_access_token;
     }
     else {
         const error = await response.json();

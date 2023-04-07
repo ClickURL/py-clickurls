@@ -1,5 +1,4 @@
 import uvicorn
-import json
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import RedirectResponse, HTMLResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware

@@ -26,7 +26,7 @@ class UrlDelete(UrlGet):
 class UrlEditPage(BaseModel):
     short_url: str
     secret_access_token: UUID
-    secret_access_token_full: str
+    # secret_access_token_full: str
 
     class Config:
         orm_mode = True
