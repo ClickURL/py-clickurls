@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
+
 from config import settings
 from schemas import schemas_user, schemas_url
 from crud.crud_user import UserCrud
@@ -15,6 +17,9 @@ hostname = settings.localhost
 port = settings.port
 
 app = FastAPI()
+
+app.add_middleware(HTTPSRedirectMiddleware)
+
 
 origins = ["*"]
 
