@@ -181,4 +181,4 @@ def delete_url_by_id(id: int):
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host=hostname, port=port, ssl_keyfile="./key.pem", ssl_certfile="./cert.pem")
+    uvicorn.run("main:app", host=hostname, port=port)
