@@ -79,6 +79,9 @@ def redirect_to_long_url(short_url: str):
         redirect_url = result.original_url
         if redirect_url:
             ViewCrud().create_view(result.id)
+        else:
+            # TODO
+            pass
         return RedirectResponse(redirect_url)
     except HTTPException as e:
         raise e.detail("Redirect to original URL ERROR")
