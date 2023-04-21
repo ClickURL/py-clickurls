@@ -10,7 +10,7 @@ class UrlCrud:
         self.db = Database()
     
     def get_url_by_id(self, url_id):
-        result = self.db.get_url("url_id", url_id)
+        result = self.db.get_url_by_id(url_id)
         if not result:
             return "URL not exist in database"
         url_return = Url(**result)
@@ -18,15 +18,23 @@ class UrlCrud:
             return "URL already deleted"
         return url_return
     
-    # get from DB one url by any column from database
-    def get_url_by_column(self, column: str, value):
-        result = self.db.get_url(column, value)
+    def get_url_by_token(self, token):
+        result = self.db.get_url_by_token(token)
         if not result:
             return "URL not exist in database"
         url_return = Url(**result)
         if url_return.url_is_deleted():
             return "URL already deleted"
         return url_return
+    
+    def get_url_by_short(self, short):
+        result = self.db.get_url_by_short(short)
+        if not result:
+            return "URL not exist in database"
+        url_return = Url(**result)
+        if url_return.url_is_deleted():
+            return "URL already deleted"
+        return url_return    
     
     def get_all_urls(self):
         result = self.db.get_urls()
@@ -45,7 +53,7 @@ class UrlCrud:
             raise Exception("Sorry, this domain is on the banned list")
         while condition:
             short_code = generate_short_url()
-            if type(self.get_url_by_column("short_url", short_code)) is str:
+            if type(self.get_url_by_short(short_code)) is str:
                 condition = False
         result = self.db.create_url(original_url=orignal_url, short_url=short_code, secret_access_token=generate_access_token(), creator_id=creator_id)
         url_return = Url(**result)
@@ -58,11 +66,13 @@ class UrlCrud:
         url_return = Url(**result)
         return url_return
     
-    def delete_url(self, url_id):
+    def delete_url(self, url_id, income_token):
         url_to_delete = self.get_url_by_id(url_id)
         if type(url_to_delete) is str:
             return url_to_delete
+        if income_token != str(url_to_delete.secret_access_token):
+            raise Exception("Sorry, Invalid secret token")
         url_to_delete.delete_url()
-        result = self.db.delete_url(url_to_delete.id, url_to_delete.deleted_at)
+        result = self.db.delete_url(url_to_delete.id, url_to_delete.deleted_at, url_to_delete.secret_access_token)
         url_return = Url(**result)
         return url_return

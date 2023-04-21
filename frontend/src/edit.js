@@ -50,7 +50,7 @@ function PlotStats() {
     function get_date(rows_in){
         let results = [];
         rows_in.views_stats.forEach(function(row) {
-        results.push(row.day_views)
+        results.push(row.day)
         })
         if (results.length == 0) {
             results = [new Date().toISOString().slice(0, 10)];
@@ -60,7 +60,7 @@ function PlotStats() {
     function get_views(rows_in){
         let results = [];
         rows_in.views_stats.forEach(function(row) {
-        results.push(row.count_views)
+        results.push(row.count)
         });
         if (results.length == 0) {
             results = [0];

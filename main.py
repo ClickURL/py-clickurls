@@ -44,7 +44,7 @@ def root(response: Response,):
 @app.get("/api/edit/{secret_access_token}", response_model=schemas_url.UrlEditPage)
 def edit_url(secret_access_token: str):
     try:
-        result = UrlCrud().get_url_by_column("secret_access_token", secret_access_token)
+        result = UrlCrud().get_url_by_token(secret_access_token)
         return result
     except HTTPException as e:
         raise e.detail("EDIT URL ERROR")
@@ -72,10 +72,12 @@ def edit(secret_access_token: str, request: Request):
 @app.get("/{short_url}")
 def redirect_to_long_url(short_url: str):
     try:
-        result = UrlCrud().get_url_by_column("short_url", short_url)
+        result = UrlCrud().get_url_by_short(short_url)
         redirect_url = result.original_url
         if redirect_url:
             ViewCrud().create_view(result.id)
+        else:
+            raise Exception("Redirect to original URL ERROR")
         return RedirectResponse(redirect_url)
     except HTTPException as e:
         raise e.detail("Redirect to original URL ERROR")
@@ -86,7 +88,7 @@ def redirect_to_long_url(short_url: str):
 # ________________________________________________________________
 # ________________________________________________________________
 
-@app.get("/users_test", response_model=list[schemas_user.UserGet])
+@app.get("/users_test/test", response_model=list[schemas_user.UserGet])
 def get_all_users():
     try:
         result = UserCrud().get_all_users()
@@ -130,7 +132,7 @@ def delete_user_by_id(id: int):
 # URL side router, to interact with the entity URL (for testing)
 # ________________________________________________________________
 
-@app.get("/urls_test", response_model=list[schemas_url.UrlGet])
+@app.get("/urls_test/test", response_model=list[schemas_url.UrlGet])
 def get_all_urls():
     try:
         result = UrlCrud().get_all_urls()
@@ -171,9 +173,9 @@ def update_url_by_id(id: int, new_url: str):
         raise e.detail("PUT URL ERROR")
     
 @app.delete("/urls_test/{id}", response_model=schemas_url.UrlDelete)
-def delete_url_by_id(id: int):
+def delete_url_by_id(id: int, secret_access_token: str):
     try:
-        result = UrlCrud().delete_url(id)
+        result = UrlCrud().delete_url(id, secret_access_token)
         return result
     except HTTPException as e:
         raise e.detail("Delete URL ERROR")

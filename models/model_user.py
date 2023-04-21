@@ -2,9 +2,9 @@ from datetime import datetime
 
 class User:
     def __init__(self, **kwargs):
-        self.id = kwargs["user_id"] if kwargs.get("user_id") else None
-        self.name = kwargs["user_name"] if kwargs.get("user_name") else None
-        self.created_at = kwargs["created_at"] if kwargs.get("created_at") else None
+        self.id = kwargs["id"] if kwargs.get("id") else None
+        self.name = kwargs["name"] if kwargs.get("name") else None
+        self.created_at = kwargs["created_at"] if kwargs.get("created_at") else datetime.now()
         self.updated_at = kwargs["updated_at"] if kwargs.get("updated_at") else None
         self.deleted_at = kwargs["deleted_at"] if kwargs.get("deleted_at") else None
         self.urls = []
