@@ -14,7 +14,11 @@ class Database:
         try:
             with db.connect(self.url) as connection:
                 cursor = connection.cursor(cursor_factory=extras.RealDictCursor)
-                sql_statements = "SELECT * FROM users WHERE user_id = %s"
+                sql_statements = """
+                SELECT *
+                FROM users
+                WHERE user_id = %s
+                """
                 data = [user_id]
                 cursor.execute(sql_statements, data)
                 result = cursor.fetchone()
@@ -28,7 +32,10 @@ class Database:
         try:
             with db.connect(self.url) as connection:
                 cursor = connection.cursor(cursor_factory=extras.RealDictCursor)
-                sql_statements = "SELECT * FROM users WHERE deleted_at IS NULL"
+                sql_statements = """
+                SELECT *
+                FROM users
+                WHERE deleted_at IS NULL"""
                 cursor.execute(sql_statements)
                 result = cursor.fetchall()
                 cursor.close()
@@ -41,7 +48,11 @@ class Database:
         try:
             with db.connect(self.url) as connection:
                 cursor = connection.cursor(cursor_factory=extras.RealDictCursor)
-                sql_statements = "INSERT INTO users (name, created_at) VALUES (%s, %s) RETURNING *"
+                sql_statements = """
+                INSERT INTO users (name, created_at)
+                VALUES (%s, %s)
+                RETURNING *
+                """
                 data = [user_name, datetime.now()]
                 cursor.execute(sql_statements, data)
                 result = cursor.fetchone()
@@ -55,7 +66,13 @@ class Database:
         try:
             with db.connect(self.url) as connection:
                 cursor = connection.cursor(cursor_factory=extras.RealDictCursor)
-                sql_statements = "UPDATE users SET username = %s, updated_at = %s WHERE user_id = %s RETURNING *"
+                sql_statements = """
+                UPDATE users
+                SET username = %s,
+                    updated_at = %s
+                WHERE user_id = %s
+                RETURNING *
+                """
                 data = [user_name, user_updated_at, user_id]
                 cursor.execute(sql_statements, data)
                 result = cursor.fetchone()
@@ -69,7 +86,12 @@ class Database:
         try:
             with db.connect(self.url) as connection:
                 cursor = connection.cursor(cursor_factory=extras.RealDictCursor)
-                sql_statements = "UPDATE users SET deleted_at = %s WHERE user_id = %s RETURNING *"
+                sql_statements = """
+                UPDATE users
+                SET deleted_at = %s
+                WHERE user_id = %s
+                RETURNING *
+                """
                 data = [user_delete_at , user_id]
                 cursor.execute(sql_statements, data)
                 result = cursor.fetchone()
@@ -84,7 +106,11 @@ class Database:
         try:
             with db.connect(self.url) as connection:
                 cursor = connection.cursor(cursor_factory=extras.RealDictCursor)
-                sql_statements = "SELECT * FROM urls WHERE id = %s"
+                sql_statements = """
+                SELECT *
+                FROM urls
+                WHERE id = %s
+                """
                 data = [id]
                 cursor.execute(sql_statements, data)
                 result = cursor.fetchone()
@@ -98,7 +124,11 @@ class Database:
         try:
             with db.connect(self.url) as connection:
                 cursor = connection.cursor(cursor_factory=extras.RealDictCursor)
-                sql_statements = "SELECT * FROM urls WHERE short_url = %s"
+                sql_statements = """
+                SELECT *
+                FROM urls
+                WHERE short_url = %s
+                """
                 data = [short_url]
                 cursor.execute(sql_statements, data)
                 result = cursor.fetchone()
@@ -112,7 +142,11 @@ class Database:
         try:
             with db.connect(self.url) as connection:
                 cursor = connection.cursor(cursor_factory=extras.RealDictCursor)
-                sql_statements = "SELECT * FROM urls WHERE secret_access_token = %s"
+                sql_statements = """
+                SELECT *
+                FROM urls
+                WHERE secret_access_token = %s
+                """
                 data = [secret_access_token]
                 cursor.execute(sql_statements, data)
                 result = cursor.fetchone()
@@ -126,7 +160,10 @@ class Database:
         try:
             with db.connect(self.url) as connection:
                 cursor = connection.cursor(cursor_factory=extras.RealDictCursor)
-                sql_statements = "SELECT * FROM urls WHERE deleted_at IS NULL"
+                sql_statements = """
+                SELECT *
+                FROM urls
+                WHERE deleted_at IS NULL"""
                 cursor.execute(sql_statements)
                 result = cursor.fetchall()
                 cursor.close()
@@ -139,7 +176,12 @@ class Database:
         try:
             with db.connect(self.url) as connection:
                 cursor = connection.cursor(cursor_factory=extras.RealDictCursor)
-                sql_statements = "SELECT * FROM urls WHERE creator_id = %s AND deleted_at IS NULL"
+                sql_statements = """
+                SELECT *
+                FROM urls
+                WHERE creator_id = %s
+                    AND deleted_at IS NULL
+                """
                 data = [user_id]
                 cursor.execute(sql_statements, data)
                 result = cursor.fetchall()
@@ -153,7 +195,17 @@ class Database:
         try:
             with db.connect(self.url) as connection:
                 cursor = connection.cursor(cursor_factory=extras.RealDictCursor)
-                sql_statements = "INSERT INTO urls (original_url, short_url, secret_access_token, created_at, created_by) VALUES (%s, %s, %s, %s, %s) RETURNING *"
+                sql_statements = """
+                INSERT INTO urls (
+                        original_url,
+                        short_url,
+                        secret_access_token,
+                        created_at,
+                        created_by
+                    )
+                VALUES (%s, %s, %s, %s, %s)
+                RETURNING *
+                """
                 data = [original_url, short_url, secret_access_token, datetime.now(), creator_id]
                 cursor.execute(sql_statements, data)
                 result = cursor.fetchone()
@@ -162,12 +214,19 @@ class Database:
             print("Create URL DB Error: ", err)
             raise err
             
-    def update_url(self, url_id, new_original_url, updated_at):
+    def update_url(self, url_id, new_original_url, updated_at, secret_access_token):
         try:
             with db.connect(self.url) as connection:
                 cursor = connection.cursor(cursor_factory=extras.RealDictCursor)
-                sql_statements = "UPDATE urls SET original_url = %s, updated_at = %s WHERE id = %s RETURNING *"
-                data = [new_original_url, updated_at, url_id]
+                sql_statements = """
+                UPDATE urls
+                SET original_url = %s,
+                    updated_at = %s
+                WHERE id = %s
+                    AND secret_access_token = %s
+                RETURNING *
+                """
+                data = [new_original_url, updated_at, url_id, secret_access_token]
                 cursor.execute(sql_statements, data)
                 result = cursor.fetchone()
                 return result
@@ -179,7 +238,13 @@ class Database:
         try:
             with db.connect(self.url) as connection:
                 cursor = connection.cursor(cursor_factory=extras.RealDictCursor)
-                sql_statements = "UPDATE urls SET deleted_at = %s WHERE id = %s AND secret_access_token = %s RETURNING *"
+                sql_statements = """
+                UPDATE urls
+                SET deleted_at = %s
+                WHERE id = %s
+                    AND secret_access_token = %s
+                RETURNING *
+                """
                 data = [deleted_at, url_id, secret_access_token]
                 cursor.execute(sql_statements, data)
                 result = cursor.fetchone()
@@ -192,7 +257,10 @@ class Database:
         try:
             with db.connect(self.url) as connection:
                 cursor = connection.cursor(cursor_factory=extras.RealDictCursor)
-                sql_statements = "SELECT * FROM hour_views"
+                sql_statements = """
+                SELECT *
+                FROM hour_views
+                """
                 cursor.execute(sql_statements)
                 result = cursor.fetchall()
                 return result
@@ -204,7 +272,11 @@ class Database:
         try:
             with db.connect(self.url) as connection:
                 cursor = connection.cursor(cursor_factory=extras.RealDictCursor)
-                sql_statements = "SELECT * FROM hour_views WHERE link_id = %s"
+                sql_statements = """
+                SELECT *
+                FROM hour_views
+                WHERE link_id = %s
+                """
                 data = [link_id]
                 cursor.execute(sql_statements, data)
                 result = cursor.fetchall()
@@ -275,7 +347,11 @@ class Database:
         try:
             with db.connect(self.url) as connection:
                 cursor = connection.cursor()
-                sql_statements = "SELECT name FROM prohibited_domain WHERE name = %s"
+                sql_statements = """
+                SELECT name 
+                FROM prohibited_domain 
+                WHERE name = %s
+                """
                 data = [prohibited]
                 cursor.execute(sql_statements, data)
                 result = cursor.fetchone()

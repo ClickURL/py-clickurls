@@ -1,6 +1,5 @@
 -- Fixture data
 -- depends: 
-
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL NOT NULL,
     name VARCHAR NOT NULL,
@@ -10,15 +9,13 @@ CREATE TABLE IF NOT EXISTS users (
     PRIMARY KEY (id)
 );
 
-INSERT INTO
-    users (name, created_at)
-VALUES
-    ('Anton', '2023-04-12 12:00:00'),
+INSERT INTO users (name, created_at)
+VALUES ('Anton', '2023-04-12 12:00:00'),
     ('Oleg', '2023-04-12 12:00:00'),
     ('Kaban', '2023-04-12 12:00:00');
 
 CREATE TABLE IF NOT EXISTS urls (
-    id SERIAL,
+    id SERIAL NOT NULL,
     original_url VARCHAR NOT NULL,
     short_url VARCHAR NOT NULL,
     secret_access_token uuid NOT NULL,
@@ -30,36 +27,16 @@ CREATE TABLE IF NOT EXISTS urls (
     FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE RESTRICT
 );
 
-INSERT INTO
-    urls (
+INSERT INTO urls (
         original_url,
         short_url,
         secret_access_token,
         created_at,
         created_by
     )
-VALUES
-    (
-        'https://fastapi.tiangolo.com/',
-        '12345',
-        'a8098c1a-f86e-11da-bd1a-00112444be1e',
-        '2023-04-12 12:00:00',
-        1
-    ),
-    (
-        'https://plotly.com/graphing-libraries/',
-        '54321',
-        'a8098c1a-f86e-11da-bd1a-00112444be2e',
-        '2023-04-12 12:00:00',
-        2
-    ),
-    (
-        'https://docs.pydantic.dev/',
-        'qwert',
-        'a8098c1a-f86e-11da-bd1a-00112444be3e',
-        '2023-04-12 12:00:00',
-        3
-    );
+VALUES ('https://fastapi.tiangolo.com/', '12345', 'a8098c1a-f86e-11da-bd1a-00112444be1e', '2023-04-12 12:00:00',  1),
+    ('https://plotly.com/graphing-libraries/', '54321', 'a8098c1a-f86e-11da-bd1a-00112444be2e', '2023-04-12 12:00:00', 2),
+    ('https://docs.pydantic.dev/', 'qwert', 'a8098c1a-f86e-11da-bd1a-00112444be3e', '2023-04-12 12:00:00', 3);
 
 CREATE TABLE IF NOT EXISTS prohibited_domain (
     id SERIAL NOT NULL,
@@ -67,10 +44,8 @@ CREATE TABLE IF NOT EXISTS prohibited_domain (
     PRIMARY KEY (id)
 );
 
-INSERT INTO
-    prohibited_domain (name)
-VALUES
-    ('www.google.com'),
+INSERT INTO prohibited_domain (name)
+VALUES ('www.google.com'),
     ('www.facebook.com'),
     ('tsn.ua');
 
@@ -81,10 +56,8 @@ CREATE TABLE IF NOT EXISTS hour_views (
     PRIMARY KEY (url_id, hour_time)
 );
 
-INSERT INTO
-    hour_views (url_id, hour_time, count)
-VALUES
-    ('1', '2023-03-01 19:00:00', '1'),
+INSERT INTO hour_views (url_id, hour_time, count)
+VALUES ('1', '2023-03-01 19:00:00', '1'),
     ('1', '2023-03-02 19:00:00', '1'),
     ('1', '2023-03-03 19:00:00', '2'),
     ('1', '2023-03-04 19:00:00', '2'),

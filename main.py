@@ -39,7 +39,7 @@ def main(request: Request):
 @app.get("/hello_world")
 def root(response: Response,):
     response.headers["X-Cat-Dog"] = "alone in the world"
-    return "sadasdas"
+    return "Hello World"
 
 @app.get("/api/edit/{secret_access_token}", response_model=schemas_url.UrlEditPage)
 def edit_url(secret_access_token: str):
@@ -179,8 +179,6 @@ def delete_url_by_id(id: int, secret_access_token: str):
         return result
     except HTTPException as e:
         raise e.detail("Delete URL ERROR")
-
-
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host=hostname, port=port, reload=True)

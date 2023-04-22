@@ -59,10 +59,14 @@ class UrlCrud:
         url_return = Url(**result)
         return url_return
         
-    def update_url(self, url_id, new_original_url = None):
+    def update_url(self, url_id, income_token, new_original_url = None):
         url_to_update = self.get_url_by_id(url_id)
+        if type(url_to_update) is str:
+            return url_to_update
+        if income_token != str(url_to_update.secret_access_token):
+            raise Exception("Sorry, Invalid secret token")
         url_to_update.update_url(new_original_url)
-        result = self.db.update_url(url_to_update.id, url_to_update.original_url, url_to_update.updated_at)
+        result = self.db.update_url(url_to_update.id, url_to_update.original_url, url_to_update.updated_at, url_to_update.secret_access_token)
         url_return = Url(**result)
         return url_return
     
