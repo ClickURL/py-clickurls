@@ -1,3 +1,4 @@
+from fastapi import HTTPException, status
 from db.database import Database
 from models.model_url import Url
 from services.access_token import generate_access_token
@@ -30,7 +31,8 @@ class UrlCrud:
     def get_url_by_short(self, short):
         result = self.db.get_url_by_short(short)
         if not result:
-            return "URL not exist in database"
+            raise HTTPException(status_code = status.HTTP_404_NOT_FOUND,
+                                detail = "Sorry, This link has not been created")
         url_return = Url(**result)
         if url_return.url_is_deleted():
             return "URL already deleted"
@@ -50,10 +52,15 @@ class UrlCrud:
         condition = True
         check_domain = url_validator(orignal_url)
         if not check_domain:
-            raise Exception("Sorry, this domain is on the banned list")
+            raise HTTPException(status_code = status.HTTP_422_UNPROCESSABLE_ENTITY,
+                                detail = "Sorry, this domain is on the banned list")
+        check_user = self.db.get_user(creator_id)
+        if not check_user:
+            raise HTTPException(status_code = status.HTTP_422_UNPROCESSABLE_ENTITY,
+                                detail = f"Sorry, User with ID: {creator_id} no found")
         while condition:
             short_code = generate_short_url()
-            if type(self.get_url_by_short(short_code)) is str:
+            if self.db.get_url_by_short(short_code) is None:
                 condition = False
         result = self.db.create_url(original_url=orignal_url, short_url=short_code, secret_access_token=generate_access_token(), creator_id=creator_id)
         url_return = Url(**result)
@@ -64,7 +71,7 @@ class UrlCrud:
         if type(url_to_update) is str:
             return url_to_update
         if income_token != str(url_to_update.secret_access_token):
-            raise Exception("Sorry, Invalid secret token")
+            raise Exception("Sorry, Invalid secret token during updating")
         url_to_update.update_url(new_original_url)
         result = self.db.update_url(url_to_update.id, url_to_update.original_url, url_to_update.updated_at, url_to_update.secret_access_token)
         url_return = Url(**result)
@@ -75,7 +82,7 @@ class UrlCrud:
         if type(url_to_delete) is str:
             return url_to_delete
         if income_token != str(url_to_delete.secret_access_token):
-            raise Exception("Sorry, Invalid secret token")
+            raise Exception("Sorry, Invalid secret token during removing")
         url_to_delete.delete_url()
         result = self.db.delete_url(url_to_delete.id, url_to_delete.deleted_at, url_to_delete.secret_access_token)
         url_return = Url(**result)

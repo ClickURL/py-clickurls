@@ -9,7 +9,7 @@ env-down:
 	docker-compose down
 
 env-clear:
-	docker-compose down --remove-orphans -v # --rmi=all
+	docker-compose down --remove-orphans -v --rmi=all
 
 app:
 	docker exec -it py-click-application bash

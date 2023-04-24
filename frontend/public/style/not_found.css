@@ -52,68 +52,12 @@ body {
     margin-right: auto;
 }
 
-#input_user_id {
-    color: #333;
-    margin: 0 auto;
-    border-radius: 0.4rem;
-    background-color: rgb(255, 255, 255);
-    border: none;
-    width: 20%;
-    display: block;
-    transition: all 0.3s;
-    text-align: center;
-}
-
 .main {
     display: flex;
     justify-content: center;
 }
 
-.create-shorturl {
-    text-align: center;
-    margin: 30px;
-    padding-top: 70px;
-}
-.create-shorturl a {
-    color: #bbb4d8;
-    font-size: 30px;
-}
 
-.create-shorturl *{
-    top: 30%;
-    margin: 10px auto;
-}
-
-#input-form {
-    display: flex; 
-    flex-direction: column;
-}
-
-#input-form input {
-    width: 100px;
-    height: 30px;
-    border: 1px solid #0f0e20;
-    border-radius: 15px;
-    text-align: center;
-    transition-duration: 1s;
-    transition-property: width;
-}
-#input-form input:focus {
-    width: 370px;
-    transition-duration: 1s;
-    transition-property: width;
-}
-
-#create_button {
-    height: 70px;
-    width: 70px;
-    border: 2px solid #0f0e20;
-    border-radius: 35px;
-    background-color: #00000067;
-    box-shadow: 0px 0px 20px 7px #00000067;
-    color:rgb(122, 245, 122);
-    font-size: 28px;
-}
 
 .line {
     height: 3px;
@@ -136,12 +80,10 @@ body {
 }
 
 #error-container{
-    visibility: hidden;
     z-index: 1;
     position: absolute;
     width: 100%;
     height: 100%;
-    background-color: rgba(24, 24, 26, 0.432);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -150,12 +92,17 @@ body {
 #error-message{
     background-color: rgba(0, 0, 0, 0.63);
     margin: auto;
-    width: 20%;
-    height: 5%;
-    border-radius: 14px;
+    width: 40%;
+    height: 15%;
+    border-radius: 24px;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
+
+}
+
+#error-message a {
     color: #ff494a;
-} 
+    font-size: 45px;
+}

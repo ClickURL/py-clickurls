@@ -1,9 +1,13 @@
 import uvicorn
-from fastapi import FastAPI, HTTPException, Request, Response
-from fastapi.responses import RedirectResponse, HTMLResponse, FileResponse
+import logging
+from fastapi import FastAPI, HTTPException, Request, Response, status
+from fastapi.responses import RedirectResponse, HTMLResponse, FileResponse, JSONResponse, PlainTextResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi.exceptions import RequestValidationError
+from fastapi.encoders import jsonable_encoder
+
 
 from config import settings
 from schemas import schemas_user, schemas_url
@@ -16,6 +20,15 @@ port = settings.port
 
 app = FastAPI()
 
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc):
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content=jsonable_encoder({"detail": (exc.errors())[0]["msg"]})
+    )
+
+logger = logging.getLogger(__name__)
+
 origins = ["*"]
 
 app.add_middleware(
@@ -27,6 +40,14 @@ app.add_middleware(
 )
 app.mount("/py-clickurl", StaticFiles(directory="./frontend/", html = True), name="static")
 templates = Jinja2Templates(directory = "./frontend/public")
+
+@app.exception_handler(404)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    return RedirectResponse("/error")
+
+@app.get("/error/404")
+def not_found(request: Request):
+    return templates.TemplateResponse("not_found.html", {"request": request})
 
 @app.get("/favicon.ico")
 def favicon():
@@ -63,7 +84,8 @@ def create_url(input: schemas_url.UrlPost):
         result = UrlCrud().create_url(input.original_url, input.creator_id)
         return result
     except HTTPException as e:
-        raise e.detail("POST URL ERROR")
+        logger.error("POST ERROR")
+        raise e
 
 @app.get("/edit/{secret_access_token}", response_class=HTMLResponse)
 def edit(secret_access_token: str, request: Request):
@@ -74,13 +96,11 @@ def redirect_to_long_url(short_url: str):
     try:
         result = UrlCrud().get_url_by_short(short_url)
         redirect_url = result.original_url
-        if redirect_url:
-            ViewCrud().create_view(result.id)
-        else:
-            raise Exception("Redirect to original URL ERROR")
+        ViewCrud().create_view(result.id)
         return RedirectResponse(redirect_url)
     except HTTPException as e:
-        raise e.detail("Redirect to original URL ERROR")
+        logger.error("Redirect to original URL ERROR")
+        raise e
 
 # User side router, to interact with the entity User (for testing)
 # ________________________________________________________________

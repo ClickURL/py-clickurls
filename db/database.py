@@ -17,7 +17,7 @@ class Database:
                 sql_statements = """
                 SELECT *
                 FROM users
-                WHERE user_id = %s
+                WHERE id = %s
                 """
                 data = [user_id]
                 cursor.execute(sql_statements, data)
@@ -70,7 +70,7 @@ class Database:
                 UPDATE users
                 SET username = %s,
                     updated_at = %s
-                WHERE user_id = %s
+                WHERE id = %s
                 RETURNING *
                 """
                 data = [user_name, user_updated_at, user_id]
@@ -89,7 +89,7 @@ class Database:
                 sql_statements = """
                 UPDATE users
                 SET deleted_at = %s
-                WHERE user_id = %s
+                WHERE id = %s
                 RETURNING *
                 """
                 data = [user_delete_at , user_id]

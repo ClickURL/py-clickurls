@@ -5,31 +5,27 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.plot.ly/plotly-2.20.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
-    <link rel="stylesheet" href="/py-clickurl/public/style/edit.css">
-    <title>Document</title>
+    <link rel="stylesheet" href="/py-clickurl/public/style/not_found.css">
+    <title>Not found</title>
 </head>
 <body>
     <section id="main-page">
-        <header class="header">
+        <header id="header" class="header">
             <div class="flex-element logo">
-                <img id="header-logo"class="header-logo" src="/py-clickurl/public/image/logo_192x192.png" alt="logo">
+                <img  id="header-logo"  class="header-logo" src="/py-clickurl/public/image/logo_192x192.png" alt="logo">
             </div>
             <div class="flex-element name-logo">
                 <a id="logo_ref">py-clickurl</a>
             </div>
-            <div class="flex-element authorization">  
+            <div class="flex-element authorization">   
             </div>
         </header>
         <div class="line"></div>
         <main id="main" class="main">
-            <div id="table"></div>
-            <div id="stats"></div>
-            <div id="button">
-                <button id="update_button">
-                    <img class="button-img" src="/py-clickurl/public/image/button.svg" alt="update">
-                </button>
+            <div id="error-container">
+                <div id="error-message">
+                    <a>404 Not Found</a>
+                </div>
             </div>
         </main>
         <footer class="footer">
@@ -37,8 +33,8 @@
             <h2>footer</h2>
         </footer>
     </section>
-    <script src="/py-clickurl/src/edit.js"></script>
     <script>
+        const locations = window.location.origin;
         let logo = document.getElementById("header-logo");
         let name_logo = document.getElementById("logo_ref");
         logo.addEventListener("click", function(){
@@ -50,3 +46,4 @@
     </script>
 </body>
 </html>
+
