@@ -11,8 +11,6 @@ class UserCrud:
         if not result:
             return "User not exist in database"
         user_return = User(**result)
-        if user_return.user_is_deleted():
-            return "User already deleted"
         return user_return
     
     def get_all_users(self):
@@ -20,15 +18,15 @@ class UserCrud:
         users_return = [User(**value) for value in result]
         return users_return
     
-    def create_user(self, user_name):
-        result = self.db.create_user(user_name)
+    def create_user(self):
+        result = self.db.create_user()
         user_return = User(**result)
         return user_return
     
     def update_user(self, user_id, new_user_name = None):
         user_to_update = self.get_user(user_id)
         user_to_update.update_user(new_user_name)
-        result = self.db.update_user(user_to_update.name, user_to_update.updated_at, user_to_update.id)
+        result = self.db.update_user(user_to_update.updated_at, user_to_update.id)
         user_return = User(**result)
         return user_return
     

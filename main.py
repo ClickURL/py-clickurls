@@ -1,7 +1,8 @@
 import uvicorn
 import logging
-from fastapi import FastAPI, HTTPException, Request, Response, status
-from fastapi.responses import RedirectResponse, HTMLResponse, FileResponse, JSONResponse, PlainTextResponse
+from typing import Annotated, Optional
+from fastapi import FastAPI, HTTPException, Request, Response, Cookie, status
+from fastapi.responses import RedirectResponse, HTMLResponse, FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -15,10 +16,15 @@ from crud.crud_user import UserCrud
 from crud.crud_url import UrlCrud
 from crud.crud_view import ViewCrud
 
+from oauth.auth import auth_app
+
 hostname = settings.localhost
 port = settings.port
 
 app = FastAPI()
+
+
+app.mount('/auth', auth_app)
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request, exc):
@@ -43,7 +49,7 @@ templates = Jinja2Templates(directory = "./frontend/public")
 
 @app.exception_handler(404)
 async def http_exception_handler(request: Request, exc: HTTPException):
-    return RedirectResponse("/error")
+    return RedirectResponse("/error/404")
 
 @app.get("/error/404")
 def not_found(request: Request):
@@ -58,9 +64,11 @@ def main(request: Request):
     return templates.TemplateResponse("create_url.html", {"request": request})
 
 @app.get("/hello_world")
-def root(response: Response,):
+def root(response: Response, request: Request):
     response.headers["X-Cat-Dog"] = "alone in the world"
-    return "Hello World"
+    my_jwt = request.cookies.get('acces_token')
+    return {"message": "Hello World",
+            "my_jwt": my_jwt}
 
 @app.get("/api/edit/{secret_access_token}", response_model=schemas_url.UrlEditPage)
 def edit_url(secret_access_token: str):
@@ -125,17 +133,17 @@ def get_user_by_id(id: int):
         raise e.detail("Get User ERROR")
 
 @app.post("/users_test", response_model=schemas_user.UserPost)
-def create_user(user_post):
+def create_user():
     try:
-        result = UserCrud().create_user(user_post)
+        result = UserCrud().create_user()
         return result
     except HTTPException as e:
         raise e.detail("POST User ERROR")
     
 @app.put("/users_test", response_model=schemas_user.UserUpdate)
-def update_user_by_id(id: int, new_user_name):
+def update_user_by_id(id: int):
     try:
-        result = UserCrud().update_user(id, new_user_name)
+        result = UserCrud().update_user(id)
         return result
     except HTTPException as e:
         raise e.detail("Update User ERROR")

@@ -1,7 +1,9 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import psycopg2 as db
 from psycopg2 import extras
 from config import settings
+
+from oauth.user_social_profile import SocialProfile
 
 extras.register_uuid()
 
@@ -24,9 +26,9 @@ class Database:
                 result = cursor.fetchone()
                 cursor.close()
                 return result
-        except Exception as err:
-            print("Get User DB Error: ", err)
-            raise err
+        except Exception as e:
+            print("Get User DB Error: ", e)
+            raise e
     
     def get_users(self):
         try:
@@ -40,47 +42,46 @@ class Database:
                 result = cursor.fetchall()
                 cursor.close()
                 return result
-        except Exception as err:
-            print("Get Users Error: ", err)
-            raise err
+        except Exception as e:
+            print("Get Users Error: ", e)
+            raise e
 
-    def create_user(self, user_name):
+    def create_user(self):
         try:
             with db.connect(self.url) as connection:
                 cursor = connection.cursor(cursor_factory=extras.RealDictCursor)
                 sql_statements = """
-                INSERT INTO users (name, created_at)
+                INSERT INTO users (created_at, updated_at)
                 VALUES (%s, %s)
                 RETURNING *
                 """
-                data = [user_name, datetime.now()]
+                data = [datetime.now(timezone.utc), datetime.now(timezone.utc)]
                 cursor.execute(sql_statements, data)
                 result = cursor.fetchone()
                 cursor.close()
                 return result
-        except Exception as err:
-            print("Create User Error: ", err)
-            raise err
+        except Exception as e:
+            print("Create User Error: ", e)
+            raise e
 
-    def update_user(self, user_name, user_updated_at, user_id):
+    def update_user(self, user_updated_at, user_id):
         try:
             with db.connect(self.url) as connection:
                 cursor = connection.cursor(cursor_factory=extras.RealDictCursor)
                 sql_statements = """
                 UPDATE users
-                SET username = %s,
-                    updated_at = %s
+                SET updated_at = %s
                 WHERE id = %s
                 RETURNING *
                 """
-                data = [user_name, user_updated_at, user_id]
+                data = [user_updated_at, user_id]
                 cursor.execute(sql_statements, data)
                 result = cursor.fetchone()
                 cursor.close()
                 return result
-        except Exception as err:
-            print("Update User Error: ", err)
-            raise err
+        except Exception as e:
+            print("Update User Error: ", e)
+            raise e
 
     def delete_user(self, user_id, user_delete_at):
         try:
@@ -97,9 +98,93 @@ class Database:
                 result = cursor.fetchone()
                 cursor.close()
                 return result
-        except Exception as err:
-            print("Delete User Error: ", err)
-            raise err
+        except Exception as e:
+            print("Delete User Error: ", e)
+            raise e
+    
+    
+    def create_social_profile(self, user_social_profile: SocialProfile):
+        try:
+            with db.connect(self.url) as connection:
+                cursor = connection.cursor(cursor_factory=extras.RealDictCursor)
+                sql_statements = """
+                INSERT INTO users_social_profiles (
+                    user_id,
+                    provider,
+                    social_id,
+                    email,
+                    username,
+                    created_at,
+                    updated_at
+                    )
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                RETURNING *
+                """
+                data = user_social_profile.return_list_db()
+                cursor.execute(sql_statements, data)
+                result = cursor.fetchone()
+                cursor.close()
+                return result
+        except Exception as e:
+            print("Create Social Profile Error: ", e)
+            raise e
+    
+    def get_social_profiles_by_user_id(self, user_id: int):
+        try:
+            with db.connect(self.url) as connection:
+                cursor = connection.cursor(cursor_factory=extras.RealDictCursor)
+                sql_statements = """
+                SELECT * 
+                FROM users_social_profiles
+                WHERE user_id = %s
+                """
+                data = [user_id]
+                cursor.execute(sql_statements, data)
+                result = cursor.fetchall()
+                cursor.close()
+                return result
+        except Exception as e:
+            print("GET Social Profile Error: ", e)
+            raise e
+    
+    def get_social_profiles_by_email(self, email: str):
+        try:
+            with db.connect(self.url) as connection:
+                cursor = connection.cursor(cursor_factory=extras.RealDictCursor)
+                sql_statements = """
+                SELECT * 
+                FROM users_social_profiles
+                WHERE email = %s
+                """
+                data = [email]
+                cursor.execute(sql_statements, data)
+                result = cursor.fetchall()
+                cursor.close()
+                return result
+        except Exception as e:
+            print("GET Social Profile Error: ", e)
+            raise e
+    
+    def update_social_profile(self, id: int, updated_at):
+        try:
+            with db.connect(self.url) as connection:
+                cursor = connection.cursor(cursor_factory=extras.RealDictCursor)
+                sql_statements = """
+                UPDATE users_social_profiles
+                SET updated_at = %s
+                WHERE id = %s
+                RETURNING *
+                """
+                data = [updated_at, id]
+                cursor.execute(sql_statements, data)
+                result = cursor.fetchone()
+                cursor.close()
+                return result
+        except Exception as e:
+            print("UPDATE Social Profile Error: ", e)
+            raise e
+    
+    
     
     
     def get_url_by_id(self, id):
@@ -116,9 +201,9 @@ class Database:
                 result = cursor.fetchone()
                 cursor.close()
                 return result
-        except Exception as err:
-            print("Get URL DB Error: ", err)
-            raise err
+        except Exception as e:
+            print("Get URL DB Error: ", e)
+            raise e
         
     def get_url_by_short(self, short_url):
         try:
@@ -134,9 +219,9 @@ class Database:
                 result = cursor.fetchone()
                 cursor.close()
                 return result
-        except Exception as err:
-            print("Get URL DB Error: ", err)
-            raise err
+        except Exception as e:
+            print("Get URL DB Error: ", e)
+            raise e
     
     def get_url_by_token(self, secret_access_token):
         try:
@@ -152,9 +237,9 @@ class Database:
                 result = cursor.fetchone()
                 cursor.close()
                 return result
-        except Exception as err:
-            print("Get URL DB Error: ", err)
-            raise err
+        except Exception as e:
+            print("Get URL DB Error: ", e)
+            raise e
             
     def get_urls(self):
         try:
@@ -168,9 +253,9 @@ class Database:
                 result = cursor.fetchall()
                 cursor.close()
                 return result
-        except Exception as err:
-            print("Get URLs DB Error: ", err)
-            raise err
+        except Exception as e:
+            print("Get URLs DB Error: ", e)
+            raise e
         
     def get_urls_by_user(self, user_id):
         try:
@@ -187,9 +272,9 @@ class Database:
                 result = cursor.fetchall()
                 cursor.close()
                 return result
-        except Exception as err:
-            print("Get User with URL DB Error: ", err)
-            raise err
+        except Exception as e:
+            print("Get User with URL DB Error: ", e)
+            raise e
         
     def create_url(self, original_url, short_url, secret_access_token, creator_id):
         try:
@@ -206,13 +291,13 @@ class Database:
                 VALUES (%s, %s, %s, %s, %s)
                 RETURNING *
                 """
-                data = [original_url, short_url, secret_access_token, datetime.now(), creator_id]
+                data = [original_url, short_url, secret_access_token, datetime.now(timezone.utc), creator_id]
                 cursor.execute(sql_statements, data)
                 result = cursor.fetchone()
                 return result
-        except Exception as err:
-            print("Create URL DB Error: ", err)
-            raise err
+        except Exception as e:
+            print("Create URL DB Error: ", e)
+            raise e
             
     def update_url(self, url_id, new_original_url, updated_at, secret_access_token):
         try:
@@ -230,9 +315,9 @@ class Database:
                 cursor.execute(sql_statements, data)
                 result = cursor.fetchone()
                 return result
-        except Exception as err:
-            print("Update URL DB Error: ", err)
-            raise err
+        except Exception as e:
+            print("Update URL DB Error: ", e)
+            raise e
     
     def delete_url(self, url_id, deleted_at, secret_access_token):
         try:
@@ -249,9 +334,9 @@ class Database:
                 cursor.execute(sql_statements, data)
                 result = cursor.fetchone()
                 return result
-        except Exception as err:
-            print("Delete URL DB Error: ", err)
-            raise err
+        except Exception as e:
+            print("Delete URL DB Error: ", e)
+            raise e
         
     def get_all_views(self):
         try:
@@ -264,9 +349,9 @@ class Database:
                 cursor.execute(sql_statements)
                 result = cursor.fetchall()
                 return result
-        except Exception as err:
-            print("Get Click DB Error: ", err)
-            raise err
+        except Exception as e:
+            print("Get Click DB Error: ", e)
+            raise e
     
     def get_views_by_url(self, link_id):
         try:
@@ -281,9 +366,9 @@ class Database:
                 cursor.execute(sql_statements, data)
                 result = cursor.fetchall()
                 return result
-        except Exception as err:
-            print("Get Click DB Error: ", err)
-            raise err
+        except Exception as e:
+            print("Get Click DB Error: ", e)
+            raise e
     
     def get_views_group_by_time(self, secret_access_token):
         try:
@@ -318,9 +403,9 @@ class Database:
                 cursor.execute(sql_statements, data)
                 result = cursor.fetchall()
                 return result
-        except Exception as err:
-            print("Get Click GROUP by time DB Error: ", err)
-            raise err
+        except Exception as e:
+            print("Get Click GROUP by time DB Error: ", e)
+            raise e
     
     def create_view(self, link_id):
         try:
@@ -335,13 +420,13 @@ class Database:
                     count = hour_views.count + 1
                 RETURNING *;
                 """
-                data = [link_id, datetime.now()]
+                data = [link_id, datetime.now(timezone.utc)]
                 cursor.execute(sql_statements, data)
                 result = cursor.fetchone()
                 return result
-        except Exception as err:
-            print("Create Click DB Error: ", err)
-            raise err
+        except Exception as e:
+            print("Create Click DB Error: ", e)
+            raise e
     
     def get_prohibited(self, prohibited):
         try:
@@ -356,6 +441,6 @@ class Database:
                 cursor.execute(sql_statements, data)
                 result = cursor.fetchone()
                 return result
-        except Exception as err:
-            print("Prohibited check DB Error: ", err)
-            raise err
+        except Exception as e:
+            print("Prohibited check DB Error: ", e)
+            raise e
