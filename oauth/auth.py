@@ -21,6 +21,8 @@ GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID') or None
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET') or None
 REDIRECT_URL = os.getenv('REDIRECT_URL') or None
 SECRET_KEY = os.getenv('SECRET_KEY') or None
+API_KEY_NAME = os.getenv('API_KEY_NAME') or "access_token"
+API_REFRESH_NAME = os.getenv('API_REFRESH_NAME') or "refresh_token"
 
 OAuthServerEndpoint = 'https://accounts.google.com/o/oauth2/v2/auth?'
 TokenServerEndpoint = 'https://oauth2.googleapis.com/token'
@@ -48,9 +50,11 @@ async def login(requset: Request):
     return RedirectResponse(auth_uri)
 
 @auth_app.route('/logout')
-async def logout(response: Response):
-    response.delete_cookie(key='acces_token')
-    return RedirectResponse("/")
+async def logout(request: Request):
+    response = RedirectResponse("/")
+    response.delete_cookie(key=API_KEY_NAME)
+    # request.cookies.clear() or could be better used 
+    return response
 
 @auth_app.route('/code')
 async def call_back_google(request: Request):
@@ -66,9 +70,12 @@ async def call_back_google(request: Request):
     credentials = json.loads(token_result.text)
     headers = {'Authorization': 'Bearer {}'.format(credentials['access_token'])}
     user_info = requests.get(RequestURI, headers=headers)
+    
     user_profile = OAuthCrud().set_social_profile(user_info=json.loads(user_info.text))
-    jwt_user_token = oauth_jwt.create_token(user_profile.id)
+    jwt_user_token = oauth_jwt.create_token(user_profile.user_id)
+    jwt_refresh_token = oauth_jwt.create_refresh_token(user_profile.user_id)
     response = RedirectResponse("/")
-    response.set_cookie(key='acces_token', value=jwt_user_token, httponly=True)
+    response.set_cookie(key=API_KEY_NAME, value=jwt_user_token)
+    response.set_cookie(key=API_REFRESH_NAME, value=jwt_refresh_token)
     return response;
 

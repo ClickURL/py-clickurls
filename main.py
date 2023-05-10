@@ -1,13 +1,15 @@
 import uvicorn
 import logging
 from typing import Annotated, Optional
-from fastapi import FastAPI, HTTPException, Request, Response, Cookie, status
+from fastapi import FastAPI, HTTPException, Request, Response, Cookie, status, Depends
 from fastapi.responses import RedirectResponse, HTMLResponse, FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
 from fastapi.encoders import jsonable_encoder
+
+from fastapi.openapi.models import APIKey
 
 
 from config import settings
@@ -17,6 +19,7 @@ from crud.crud_url import UrlCrud
 from crud.crud_view import ViewCrud
 
 from oauth.auth import auth_app
+from oauth.oauth_jwt import get_current_user
 
 hostname = settings.localhost
 port = settings.port
@@ -64,11 +67,15 @@ def main(request: Request):
     return templates.TemplateResponse("create_url.html", {"request": request})
 
 @app.get("/hello_world")
-def root(response: Response, request: Request):
-    response.headers["X-Cat-Dog"] = "alone in the world"
-    my_jwt = request.cookies.get('acces_token')
-    return {"message": "Hello World",
-            "my_jwt": my_jwt}
+def root(user_id: APIKey = Depends(get_current_user)):
+    try:
+        if user_id is None:
+            message = "User not logined"
+        message = f'user id {user_id}'
+        return {"message": message}
+    except HTTPException as e:
+        raise e.detail("JWT token ERROR")
+    
 
 @app.get("/api/edit/{secret_access_token}", response_model=schemas_url.UrlEditPage)
 def edit_url(secret_access_token: str):
